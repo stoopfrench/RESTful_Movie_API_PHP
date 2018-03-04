@@ -2,123 +2,83 @@
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
-$app = new \Slim\App;
 
 //GET ALL MOVIES
 $app->get('/api/titles', function(Request $request, Response $response){
-	$sql = "SELECT * FROM movies";
+	require_once('../src/config/db.php');
 
-	try{
-		$db = new db();
-		$db = $db->connect();
+	$query = "SELECT * FROM movies";
+	$result = $mysqli->query($query);
 
-		$stmt = $db->query($sql);
-		$movies = $stmt->fetchAll(PDO::FETCH_OBJ);
-		$db = null;
-		echo json_encode($movies);
 
-	} catch(PDOException $e){
-		echo '{"error": {"text": '.$e->getMessage().'}';
+	while($row = $result->fetch_assoc()) {
+		$data[] = $row;
 	}
+
+	header('Content-Type: application/json');
+	echo json_encode($data);
 });
 
 //GET MOVIE BY ID
 $app->get('/api/titles/{id}', function(Request $request, Response $response){
+	require_once('../src/config/db.php');
+	
 	$id = $request->getAttribute('id');
-	$sql = "SELECT FROM movies WHERE id = $id";
 
-	try{
-		$db = new db();
-		$db = $db->connect();
+	$query = "SELECT * FROM movies WHERE id = $id";
+	$result = $mysqli->query($query);
 
-		$stmt = $db->query($sql);
-		$movie = $stmt->fetchAll(PDO::FETCH_OBJ);
-		$db = null;
-		echo json_encode($movie);
-
-	} catch(PDOException $e){
-		echo '{"error": {"text": '.$e->getMessage().'}';
-	}
+	$data[] = $result->fetch_assoc();
+	header('Content-Type: application/json');
+	echo json_encode($data);
 });
 
 //CREATE MOVIE
 $app->post('/api/titles', function(Request $request, Response $response){
-	$title = $request->getParam('title');
-	$year = $request->getParam('year');
-	$genres = $request->getParam('genres');
+	require_once('../src/config/db.php');
 
-	$sql = "INSERT INTO movies (title,year,genres) VALUES(:title,:year,:genres)";
+	$query = "INSERT INTO movies (`title`,`year`,`genres`) VALUES(?,?,?)";
+	$stmt = $mysqli->prepare($query);
+	$stmt->bind_param("sss", $a, $b, $c);
 
-	try{
-		$db = new db();
-		$db = $db->connect();
+	$a = $request->getParsedBody()['title'];
+	$b = $request->getParsedBody()['year'];
+	$c = $request->getParsedBody()['genres'];
 
-		$stmt = $db->prepare($sql);
+	$stmt->execute();
 
-		$stmt->bindParam(':title',$title);
-		$stmt->bindParam(':year',$year);
-		$stmt->bindParam(':genres',$genres);
-
-		$stmt->execute();
-
-		echo '{"notice": {"text": "Movie Created"}';
-
-	} catch(PDOException $e){
-		echo '{"error": {"text": '.$e->getMessage().'}';
-	}
+	echo '{"notice": {"text": "Movie Created"}';
 });
 
 //UPDATE MOVIE
-$app->put('/api/titles/{id}', function(Request $request, Response $response){
+$app->patch('/api/titles/{id}', function(Request $request, Response $response){
+	require_once('../src/config/db.php');
+
 	$id = $request->getAttribute('id');
-	$title = $request->getParam('title');
-	$year = $request->getParam('year');
-	$genres = $request->getParam('genres');
 
-	$sql = "UPDATE movies SET 
-				title = :title,
-				year = :year,
-				genres = :genres
-			WHERE id = $id";
+	$query = "UPDATE `movies` SET `title` = ?, `year` = ?, `genres` = ? WHERE `movies`.`id` = $id";
+	$stmt = $mysqli->prepare($query);
+	$stmt->bind_param("sss", $a, $b, $c);
 
-	try{
-		$db = new db();
-		$db = $db->connect();
+	$a = $request->getParsedBody()['title'];
+	$b = $request->getParsedBody()['year'];
+	$c = $request->getParsedBody()['genres'];
 
-		$stmt = $db->prepare($sql);
+	$stmt->execute();
 
-		$stmt->bindParam(':title',$title);
-		$stmt->bindParam(':year',$year);
-		$stmt->bindParam(':genres',$genres);
-
-		$stmt->execute();
-
-		echo '{"notice": {"text": "Movie Updated"}';
-
-	} catch(PDOException $e){
-		echo '{"error": {"text": '.$e->getMessage().'}';
-	}
+	echo '{"notice": {"text": "Movie Created"}';
 });
 
 //DELETE MOVIE
 $app->delete('/api/titles/{id}', function(Request $request, Response $response){
+	require_once('../src/config/db.php');
+
 	$id = $request->getAttribute('id');
-	$sql = "DELETE FROM movies WHERE id = $id";
+	$query = "DELETE FROM movies WHERE id = $id";
 
-	try{
-		$db = new db();
-		$db = $db->connect();
+	$result = $mysqli->query($query);
 
-		$stmt = $db->prepare($sql);
-		$stmt->execute();
-		$db = null;
-
-		echo '{"notice": {"text": "Movie Deleted"}';
-
-
-	} catch(PDOException $e){
-		echo '{"error": {"text": '.$e->getMessage().'}';
-	}
+	echo '{"notice":{"text":"Movie Deleted"}';
 });
 
 
