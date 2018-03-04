@@ -5,7 +5,7 @@ use \Psr\Http\Message\ResponseInterface as Response;
 
 //GET ALL MOVIES
 $app->get('/api/titles', function(Request $request, Response $response){
-	require_once('../src/config/db.php');
+	require_once('../api/config/db.php');
 
 	$query = "SELECT * FROM movies";
 	$result = $mysqli->query($query);
@@ -21,7 +21,7 @@ $app->get('/api/titles', function(Request $request, Response $response){
 
 //GET MOVIE BY ID
 $app->get('/api/titles/{id}', function(Request $request, Response $response){
-	require_once('../src/config/db.php');
+	require_once('../api/config/db.php');
 	
 	$id = $request->getAttribute('id');
 
@@ -35,7 +35,7 @@ $app->get('/api/titles/{id}', function(Request $request, Response $response){
 
 //CREATE MOVIE
 $app->post('/api/titles', function(Request $request, Response $response){
-	require_once('../src/config/db.php');
+	require_once('../api/config/db.php');
 
 	$query = "INSERT INTO movies (`title`,`year`,`genres`) VALUES(?,?,?)";
 	$stmt = $mysqli->prepare($query);
@@ -52,7 +52,7 @@ $app->post('/api/titles', function(Request $request, Response $response){
 
 //UPDATE MOVIE
 $app->patch('/api/titles/{id}', function(Request $request, Response $response){
-	require_once('../src/config/db.php');
+	require_once('../api/config/db.php');
 
 	$id = $request->getAttribute('id');
 
@@ -71,7 +71,7 @@ $app->patch('/api/titles/{id}', function(Request $request, Response $response){
 
 //DELETE MOVIE
 $app->delete('/api/titles/{id}', function(Request $request, Response $response){
-	require_once('../src/config/db.php');
+	require_once('../api/config/db.php');
 
 	$id = $request->getAttribute('id');
 	$query = "DELETE FROM movies WHERE id = $id";

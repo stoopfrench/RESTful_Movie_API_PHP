@@ -6,7 +6,7 @@ require '../vendor/autoload.php';
 
 $app = new \Slim\App;
 
-require_once '../src/routes/genre.php';
-require_once '../src/routes/titles.php';
+require_once '../api/routes/genre.php';
+require_once '../api/routes/titles.php';
 
 $app->run();
