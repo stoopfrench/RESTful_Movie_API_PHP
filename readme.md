@@ -21,17 +21,17 @@
 
 **Movie Search**
 
-GET `/titles`
+GET `api/titles`
  	
  	Returns ALL the movies in the database
 
-GET `/titles/<id>`
+GET `api/titles/<id>`
  	
  	Returns the movie stored with that ID
 
 **Create New Movie**
 
-POST `/titles`
+POST `api/titles`
 	
 	Creates a new movie in the database.
 	
@@ -39,18 +39,18 @@ POST `/titles`
 
 **Update Movie**
 
-PATCH `/titles/<id>`
+PATCH `api/titles/<id>`
 	
 	Updates one or more properties of a movie in the database.
 
 **Delete Movie**
 
-DELETE `/titles/<id>`
+DELETE `api/titles/<id>`
 
 	Deletes the movie with that ID.
 
 **Genre Index**
 
-GET `/genre`
+GET `api/genre`
 	
 	Returns a list of ALL the genres in the database sorted by the number of movies in the genre.
