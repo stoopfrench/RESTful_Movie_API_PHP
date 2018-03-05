@@ -5,37 +5,33 @@ use \Psr\Http\Message\ResponseInterface as Response;
 
 //GET ALL MOVIES
 $app->get('/api/genre', function(Request $request, Response $response){
-	$sql = "SELECT genres FROM movies";
+	require_once('../api/config/db.php');
 
-	try{
-		$db = new db();
-		$db = $db->connect();
+	$query = "SELECT genres FROM movies";
+	$result = $mysqli->query($query);
 
-		$stmt = $db->query($sql);
-		$movies = $stmt->fetchAll(PDO::FETCH_ASSOC);
-		$db = null;
-		echo json_encode($movies);
 
-	} catch(PDOException $e){
-		echo '{"error": {"text": '.$e->getMessage().'}';
+	while($row = $result->fetch_assoc()) {
+		$data[] = $row;
 	}
+
+	foreach ($data as $key => $value) {
+		$genreString = $value['genres'];
+		$genres = explode("|", $genreString);
+		var_dump($genres);
+	}
+
+		// foreach ($genreData as $key => $value) {
+		// 	$genreString = $value;
+		// 	$genres = explode("|", $genreString);
+		// 	var_dump($genres);
+		// }
+	// $newResponse = $response->withJson($data,200);
+
+	// return $newResponse;
 });
 
 //GET MOVIE BY ID
 $app->get('/api/genre/{genre}', function(Request $request, Response $response){
-	$genre = $request->getAttribute('genre');
-	$sql = "SELECT FROM movies WHERE genres = $genre";
 
-	try{
-		$db = new db();
-		$db = $db->connect();
-
-		$stmt = $db->query($sql);
-		$movie = $stmt->fetchAll(PDO::FETCH_OBJ);
-		$db = null;
-		echo json_encode($movie);
-
-	} catch(PDOException $e){
-		echo '{"error": {"text": '.$e->getMessage().'}';
-	}
 });

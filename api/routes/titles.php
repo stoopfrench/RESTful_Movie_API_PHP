@@ -15,8 +15,9 @@ $app->get('/api/titles', function(Request $request, Response $response){
 		$data[] = $row;
 	}
 
-	header('Content-Type: application/json');
-	echo json_encode($data);
+	$newResponse = $response->withJson($data,200);
+
+	return $newResponse;
 });
 
 //GET MOVIE BY ID
@@ -29,8 +30,10 @@ $app->get('/api/titles/{id}', function(Request $request, Response $response){
 	$result = $mysqli->query($query);
 
 	$data[] = $result->fetch_assoc();
-	header('Content-Type: application/json');
-	echo json_encode($data);
+
+	$newResponse = $response->withJson($data,200);
+
+	return $newResponse;
 });
 
 //CREATE MOVIE
@@ -46,8 +49,10 @@ $app->post('/api/titles', function(Request $request, Response $response){
 	$c = $request->getParsedBody()['genres'];
 
 	$stmt->execute();
+	
+	$newResponse = $response->withJson($data,201);
 
-	echo '{"notice": {"text": "Movie Created"}';
+	return $newResponse;
 });
 
 //UPDATE MOVIE
@@ -55,18 +60,33 @@ $app->patch('/api/titles/{id}', function(Request $request, Response $response){
 	require_once('../api/config/db.php');
 
 	$id = $request->getAttribute('id');
+	
+	$updates = $request->getParsedBody();
+	$movieQuery = "SELECT * FROM movies WHERE id = $id";
+	$result = $mysqli->query($movieQuery);
+	$data[] = $result->fetch_assoc();
+	$movie = $data[0];
 
 	$query = "UPDATE `movies` SET `title` = ?, `year` = ?, `genres` = ? WHERE `movies`.`id` = $id";
 	$stmt = $mysqli->prepare($query);
 	$stmt->bind_param("sss", $a, $b, $c);
 
-	$a = $request->getParsedBody()['title'];
-	$b = $request->getParsedBody()['year'];
-	$c = $request->getParsedBody()['genres'];
+	$a = (array_key_exists('title', $updates)) ? $updates['title'] : $data['title'];
+	$b = (array_key_exists('year', $updates)) ? $updates['year'] : $movie['year'];
+	$c = (array_key_exists('genres', $updates)) ? $updates['genres'] : $movie['genres'];
 
 	$stmt->execute();
 
-	echo '{"notice": {"text": "Movie Created"}';
+	$success = '{
+		"notice": {
+			"message": "Movie has been updated"
+			}
+		}';
+
+	$decodedSuccess = json_decode($success,true);
+
+	return $response->withJson($decodedSuccess,200);
+
 });
 
 //DELETE MOVIE
@@ -78,7 +98,16 @@ $app->delete('/api/titles/{id}', function(Request $request, Response $response){
 
 	$result = $mysqli->query($query);
 
-	echo '{"notice":{"text":"Movie Deleted"}';
+	$success = '{
+		"notice":{
+			"message":"Movie has been Deleted"
+			}
+		}';
+	
+	$decodedSuccess = json_decode($success,true);
+	
+	return $response->withJson($decodedSuccess,200);
+
 });
 
 
