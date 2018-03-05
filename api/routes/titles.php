@@ -49,10 +49,17 @@ $app->post('/api/titles', function(Request $request, Response $response){
 	$c = $request->getParsedBody()['genres'];
 
 	$stmt->execute();
-	
-	$newResponse = $response->withJson($data,201);
 
-	return $newResponse;
+	$success = '{
+		"notice": {
+			"message": "Movie has been Created"
+			}
+		}';
+
+	$decodedSuccess = json_decode($success,true);
+
+	return $response->withJson($decodedSuccess,201);
+
 });
 
 //UPDATE MOVIE

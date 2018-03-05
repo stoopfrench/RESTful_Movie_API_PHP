@@ -6,6 +6,7 @@ use \Psr\Http\Message\ResponseInterface as Response;
 //GET ALL MOVIES
 $app->get('/api/genre', function(Request $request, Response $response){
 	require_once('../api/config/db.php');
+	$genreArray = array();
 
 	$query = "SELECT genres FROM movies";
 	$result = $mysqli->query($query);
@@ -18,17 +19,14 @@ $app->get('/api/genre', function(Request $request, Response $response){
 	foreach ($data as $key => $value) {
 		$genreString = $value['genres'];
 		$genres = explode("|", $genreString);
-		var_dump($genres);
+		for($i = 0, $size = count($genres); $i < $size; ++$i) { 
+			array_push($genreArray, $genres[$i]);
+		}
 	}
+	$uniqueGenres = array_unique($genreArray);
 
-		// foreach ($genreData as $key => $value) {
-		// 	$genreString = $value;
-		// 	$genres = explode("|", $genreString);
-		// 	var_dump($genres);
-		// }
-	// $newResponse = $response->withJson($data,200);
+	return $response->withJson($uniqueGenres);
 
-	// return $newResponse;
 });
 
 //GET MOVIE BY ID
