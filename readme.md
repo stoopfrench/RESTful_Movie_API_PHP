@@ -1,6 +1,6 @@
 # RESTful Movie API
 
-*PHP/Slim Framework with mySQL*
+*PHP/Slim 3 with mySQL*
 
 **INSTALLATION -----------------------------------------------------------------------------**
 
@@ -41,7 +41,7 @@ POST `/titles`
 
 PATCH `/titles/<id>`
 	
-	Updates one or more values of a movie in the database.
+	Updates one or more properties of a movie in the database.
 
 **Delete Movie**
 
