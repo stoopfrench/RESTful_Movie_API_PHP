@@ -10,11 +10,10 @@
 3. Install Dependencies:
 	`php composer.phar install`
 4. Start your server and database.		
-5. Open a new terminal tab (the other one should be running the mongoDB service).
-6. Create a new database and name it `movie-database` and create a new table named `movies`.
-7. Make 4 new columns and create the following: `id int (11) Auto-Increment, title varchar (255), year varchar (255), genres varchar (255)`
-8. Import the csv file in the `assets` folder into your .
-9. Use an API Development Enviroment (ex. Postman) to make requests to the API.
+5. Create a new database and name it `movie-database` and create a new table named `movies`.
+6. Make 4 new columns and create the following: `id int (11) Auto-Increment, title varchar (255), year varchar (255), genres varchar (255)`
+7. Import the csv file in the `assets` folder into your .
+8. Use an API Development Enviroment (ex. Postman) to make requests to the API.
 
 
 **ENDPOINTS --------------------------------------------------------------------------------**
@@ -35,7 +34,7 @@ POST `api/titles`
 	
 	Creates a new movie in the database.
 	
-	Template: { title: 'string', year: 'number', genres: 'string ( seperated by | )' }
+	Template: { title: 'string', year: 'string', genres: 'string ( seperated by | )' }
 
 **Update Movie**
 
