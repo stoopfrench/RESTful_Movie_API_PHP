@@ -6,14 +6,33 @@ use \Psr\Http\Message\ResponseInterface as Response;
 //GET ALL MOVIES
 $app->get('/api/titles', function(Request $request, Response $response){
 	require_once('../api/config/db.php');
+	$yearArray = [];
 
-	$query = "SELECT * FROM movies";
+	$query = "SELECT * FROM movies ORDER BY year";
 	$result = $mysqli->query($query);
 
 
 	while($row = $result->fetch_assoc()) {
 		$data[] = $row;
 	}
+	foreach ($data as $year) {
+		array_push($yearArray,$year['year']);	
+	}
+	$yearCount = array_count_values($yearArray);
+	
+	arsort($yearCount);
+
+	// function cmp($a, $b){
+ //    	return strcmp($a["fruit"], $b["fruit"]);
+	// }
+
+    usort($data, function ($a, $b)  use ($yearCount) {
+    	if($a['year'] === $b['year']){
+    		return strcmp($a['title'],$b['title']);
+    	}
+
+        return $yearCount[$a['year']] <= $yearCount[$b['year']] ?  1 : -1;
+    });
 
 	$newResponse = $response->withJson($data,200);
 
@@ -78,7 +97,7 @@ $app->patch('/api/titles/{id}', function(Request $request, Response $response){
 	$stmt = $mysqli->prepare($query);
 	$stmt->bind_param("sss", $a, $b, $c);
 
-	$a = (array_key_exists('title', $updates)) ? $updates['title'] : $data['title'];
+	$a = (array_key_exists('title', $updates)) ? $updates['title'] : $movie['title'];
 	$b = (array_key_exists('year', $updates)) ? $updates['year'] : $movie['year'];
 	$c = (array_key_exists('genres', $updates)) ? $updates['genres'] : $movie['genres'];
 
