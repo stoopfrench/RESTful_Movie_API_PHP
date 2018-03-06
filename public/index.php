@@ -8,5 +8,6 @@ $app = new \Slim\App;
 
 require_once '../api/routes/genre.php';
 require_once '../api/routes/titles.php';
+require_once '../api/routes/year.php';
 
 $app->run();

@@ -53,3 +53,30 @@ DELETE `api/titles/<id>`
 GET `api/genre`
 	
 	Returns a list of ALL the genres in the database sorted by the number of movies in the genre.
+
+**Year Index**
+
+GET `api/year`
+	
+	Returns a list of ALL the years in the database sorted by the number of movies released that year.
+
+**Movies by Year**
+
+GET `api/year/<year>`
+
+	Returns a list of movies that were released during this year.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

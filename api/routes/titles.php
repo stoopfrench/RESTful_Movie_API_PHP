@@ -2,139 +2,22 @@
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
+require_once '../api/controllers/titles_controller.php';
 
 //GET ALL MOVIES
-$app->get('/api/titles', function(Request $request, Response $response){
-	require_once('../api/config/db.php');
-	$yearArray = [];
-
-	$query = "SELECT * FROM movies ORDER BY year";
-	$result = $mysqli->query($query);
-
-
-	while($row = $result->fetch_assoc()) {
-		$data[] = $row;
-	}
-	foreach ($data as $year) {
-		array_push($yearArray,$year['year']);	
-	}
-	$yearCount = array_count_values($yearArray);
-	
-	arsort($yearCount);
-
-	// function cmp($a, $b){
- //    	return strcmp($a["fruit"], $b["fruit"]);
-	// }
-
-    usort($data, function ($a, $b)  use ($yearCount) {
-    	if($a['year'] === $b['year']){
-    		return strcmp($a['title'],$b['title']);
-    	}
-
-        return $yearCount[$a['year']] <= $yearCount[$b['year']] ?  1 : -1;
-    });
-
-	$newResponse = $response->withJson($data,200);
-
-	return $newResponse;
-});
+$app->get('/api/titles', $get_all_titles);
 
 //GET MOVIE BY ID
-$app->get('/api/titles/{id}', function(Request $request, Response $response){
-	require_once('../api/config/db.php');
-	
-	$id = $request->getAttribute('id');
-
-	$query = "SELECT * FROM movies WHERE id = $id";
-	$result = $mysqli->query($query);
-
-	$data[] = $result->fetch_assoc();
-
-	$newResponse = $response->withJson($data,200);
-
-	return $newResponse;
-});
+$app->get('/api/titles/{id}', $get_movie_by_id);
 
 //CREATE MOVIE
-$app->post('/api/titles', function(Request $request, Response $response){
-	require_once('../api/config/db.php');
-
-	$query = "INSERT INTO movies (`title`,`year`,`genres`) VALUES(?,?,?)";
-	$stmt = $mysqli->prepare($query);
-	$stmt->bind_param("sss", $a, $b, $c);
-
-	$a = $request->getParsedBody()['title'];
-	$b = $request->getParsedBody()['year'];
-	$c = $request->getParsedBody()['genres'];
-
-	$stmt->execute();
-
-	$success = '{
-		"notice": {
-			"message": "Movie has been Created"
-			}
-		}';
-
-	$decodedSuccess = json_decode($success,true);
-
-	return $response->withJson($decodedSuccess,201);
-
-});
+$app->post('/api/titles', $create_new_movie);
 
 //UPDATE MOVIE
-$app->patch('/api/titles/{id}', function(Request $request, Response $response){
-	require_once('../api/config/db.php');
-
-	$id = $request->getAttribute('id');
-	
-	$updates = $request->getParsedBody();
-	$movieQuery = "SELECT * FROM movies WHERE id = $id";
-	$result = $mysqli->query($movieQuery);
-	$data[] = $result->fetch_assoc();
-	$movie = $data[0];
-
-	$query = "UPDATE `movies` SET `title` = ?, `year` = ?, `genres` = ? WHERE `movies`.`id` = $id";
-	$stmt = $mysqli->prepare($query);
-	$stmt->bind_param("sss", $a, $b, $c);
-
-	$a = (array_key_exists('title', $updates)) ? $updates['title'] : $movie['title'];
-	$b = (array_key_exists('year', $updates)) ? $updates['year'] : $movie['year'];
-	$c = (array_key_exists('genres', $updates)) ? $updates['genres'] : $movie['genres'];
-
-	$stmt->execute();
-
-	$success = '{
-		"notice": {
-			"message": "Movie has been updated"
-			}
-		}';
-
-	$decodedSuccess = json_decode($success,true);
-
-	return $response->withJson($decodedSuccess,200);
-
-});
+$app->patch('/api/titles/{id}', $update_movie_by_id);
 
 //DELETE MOVIE
-$app->delete('/api/titles/{id}', function(Request $request, Response $response){
-	require_once('../api/config/db.php');
-
-	$id = $request->getAttribute('id');
-	$query = "DELETE FROM movies WHERE id = $id";
-
-	$result = $mysqli->query($query);
-
-	$success = '{
-		"notice":{
-			"message":"Movie has been Deleted"
-			}
-		}';
-	
-	$decodedSuccess = json_decode($success,true);
-	
-	return $response->withJson($decodedSuccess,200);
-
-});
+$app->delete('/api/titles/{id}', $delete_movie_by_id);
 
 
 
