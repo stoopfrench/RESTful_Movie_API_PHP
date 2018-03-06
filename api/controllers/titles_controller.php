@@ -27,9 +27,23 @@ $get_all_titles = function(Request $request, Response $response){
         return $yearCount[$a['year']] <= $yearCount[$b['year']] ?  1 : -1;
     });
 
-	$newResponse = $response->withJson($data,200);
+    $responseData = array_map(function($value){
+		return [	"title" => $value['title'],
+   					"year" => $value['year'],
+   					"id" => $value['id'],
+   					"request" => [
+   						"type" => "GET",
+   						"description" => "get details about movie by ID",
+   						"url" => "/api/titles/" . $value['id']
+   					]
+		];
+	},$data);
+   	$newResponse = [
+   		"results" => count($data),
+   		"data" => $responseData
+   	];
 
-	// return $newResponse;
+	return $response->withJson($newResponse,200);
 };
 
 //GET MOVIE BY ID ----------------------------------------------------------
@@ -43,9 +57,23 @@ $get_movie_by_id = function(Request $request, Response $response){
 
 	$data[] = $result->fetch_assoc();
 
-	$newResponse = $response->withJson($data,200);
+	if($data === null) {
+		return $response->withJson([
+			"error" => [
+				"message" => "No movie found with that ID"
+			]
+		]);
+	}
 
-	return $newResponse;
+	return $response->withJson([
+			"results" => count($data),
+			"data" => $data[0],
+			"request" => [
+				"type" => "GET",
+				"description" => "get a list of all movies",
+				"url" => "/api/titles"
+			]
+		],200);
 };
 
 //CREATE MOVIE -------------------------------------------------------------
@@ -62,15 +90,19 @@ $create_new_movie = function(Request $request, Response $response){
 
 	$stmt->execute();
 
-	$success = '{
-		"notice": {
-			"message": "Movie has been Created"
-			}
-		}';
-
-	$decodedSuccess = json_decode($success,true);
-
-	return $response->withJson($decodedSuccess,201);
+	return $response->withJson([
+			"message" => "New Movie has been Created",
+			"created" => [
+					"title" => $a,
+					"year" => $b,
+					"genres" => $c
+				],
+			"requests" => [
+				"type" => "GET",
+				"description" => "get a list of all movies",
+				"url" => "/api/titles"
+			]
+		],201);
 };
 
 //UPDATE MOVIE -------------------------------------------------------------
@@ -85,6 +117,12 @@ $update_movie_by_id = function(Request $request, Response $response){
 	$data[] = $result->fetch_assoc();
 	$movie = $data[0];
 
+	if($movie === null) {
+		return $response->withJson([
+			"error" => "No movie found with that ID"
+		],404);
+	}
+
 	$query = "UPDATE `movies` SET `title` = ?, `year` = ?, `genres` = ? WHERE `movies`.`id` = $id";
 	$stmt = $mysqli->prepare($query);
 	$stmt->bind_param("sss", $a, $b, $c);
@@ -95,15 +133,15 @@ $update_movie_by_id = function(Request $request, Response $response){
 
 	$stmt->execute();
 
-	$success = '{
-		"notice": {
-			"message": "Movie has been updated"
-			}
-		}';
-
-	$decodedSuccess = json_decode($success,true);
-
-	return $response->withJson($decodedSuccess,200);
+	return $response->withJson([
+			"message" => "Movie has been updated",
+			"updates" => $updates,
+			"request" => [
+				"type" => "GET",
+				"description" => "get a list of all movies",
+				"url" => "/api/titles/".$movie['id']
+			]
+		],200);
 };
 
 //DELETE MOVIE -------------------------------------------------------------
@@ -111,19 +149,26 @@ $delete_movie_by_id = function(Request $request, Response $response){
 	require_once('../api/config/db.php');
 
 	$id = $request->getAttribute('id');
+	$movieQuery = "SELECT * FROM movies WHERE id = $id";
+	$movieResult = $mysqli->query($movieQuery);
+	$data = $movieResult->fetch_assoc();
+	if($data === null) {
+		return $response->withJson([
+			"error" => "No movie found with that ID"
+		],404);
+	}
 	$query = "DELETE FROM movies WHERE id = $id";
 
 	$result = $mysqli->query($query);
-
-	$success = '{
-		"notice":{
-			"message":"Movie has been Deleted"
-			}
-		}';
 	
-	$decodedSuccess = json_decode($success,true);
-	
-	return $response->withJson($decodedSuccess,200);
+	return $response->withJson([
+			"message" => "Movie has been Deleted",
+			"request" => [
+				"type" => "GET",
+				"description" => "get a new list of all movies",
+				"url" => "/api/titles"
+			]
+		],200);
 };
 
 

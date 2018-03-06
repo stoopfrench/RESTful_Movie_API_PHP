@@ -30,7 +30,20 @@ $get_year_index = function(Request $request, Response $response){
         return $yearCount[$a] <= $yearCount[$b] ?  1 : -1;
     });
 
-	return $response->withJson($newYearArray,200);
+    $responseData = array_map(function($value){
+		return [	"genre" => $value,
+   					"request" => [
+   						"type" => "GET",
+   						"description" => "get a list of movies from this Year",
+   						"url" => "/api/genre/" . $value
+   					]
+		];
+	},$newYearArray);
+
+	return $response->withJson([
+			"results" => count($newYearArray),
+			"data" => $responseData
+		],200);
 };
 
 //GET MOVIES BY YEAR -------------------------------------------------------
@@ -50,7 +63,22 @@ $get_movies_by_year = function(Request $request, Response $response){
 		return strcmp($a['title'],$b['title']);
 	});
 
-	$newResponse = $response->withJson($data,200);
+    $responseData = array_map(function($value){
+		return [	"title" => $value['title'],
+   					"year" => $value['year'],
+   					"id" => $value['id'],
+   					"request" => [
+   						"type" => "GET",
+   						"description" => "get details about movie with this ID",
+   						"url" => "/api/titles/" . $value['id']
+   					]
+		];
+	},$data);
 
-	return $newResponse;
+	return $response->withJson([
+			"year" => $year,
+			"results" => count($data),
+			"data" => $responseData
+		],200);
+
 };

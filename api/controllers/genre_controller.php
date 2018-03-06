@@ -6,6 +6,7 @@ use \Psr\Http\Message\ResponseInterface as Response;
 $get_genre_index = function(Request $request, Response $response){
 	require_once('../api/config/db.php');
 	$genreArray = [];
+	$genreCount = [];
 
 	$query = "SELECT genres FROM movies";
 	$result = $mysqli->query($query);
@@ -26,11 +27,25 @@ $get_genre_index = function(Request $request, Response $response){
 	
 	arsort($genreCount);
 
+
     usort($newGenreArray, function ($a, $b)  use ($genreCount) {
         return $genreCount[$a] <= $genreCount[$b] ?  1 : -1;
     });
 
-	return $response->withJson($newGenreArray,200);
+    $responseData = array_map(function($value){
+		return [	"genre" => $value,
+   					"request" => [
+   						"type" => "GET",
+   						"description" => "get a list of movies from this Genre",
+   						"url" => "/api/genre/" . $value
+   					]
+		];
+	},$newGenreArray);
+
+	return $response->withJson([
+			"results" => count($newGenreArray),
+			"data" => $responseData
+		],200);
 };
 
 //GET MOVIES BY GENRE ------------------------------------------------------
@@ -58,9 +73,71 @@ $get_movies_by_genre = function(Request $request, Response $response){
 	usort($moviesByGenre, function($a,$b) {
 		return strcmp($a['title'],$b['title']);
 	});
-	
-	$newResponse = $response->withJson($moviesByGenre,200);
 
-	return $newResponse;
+    $responseData = array_map(function($value){
+		return [	"title" => $value['title'],
+   					"year" => $value['year'],
+   					"id" => $value['id'],
+   					"request" => [
+   						"type" => "GET",
+   						"description" => "get details about movie by ID",
+   						"url" => "/api/titles/" . $value['id']
+   					]
+		];
+	},$data);
+
+	return $response->withJson([
+			"genre" => $genre,
+			"results" => count($moviesByGenre),
+			"data" => $moviesByGenre
+		],200);
 };
+
+//RENAME A GENRE
+/*$rename_genre = function(Request $request, Response $response) {
+	require_once('../api/config/db.php');
+
+	$genre = $request->getAttribute('genre');
+	$newGenre = $request->getParsedBody('newName');
+
+	$query = "SELECT genres FROM movies ORDER BY id";
+	$result = $mysqli->query($query);
+
+	while($row = $result->fetch_assoc()) {
+		$data[] = $row;
+	}
+	foreach ($data as $value) {
+		$genreString = $value['genres'];
+		$genres = explode("|", $genreString);
+		// var_dump($genres);
+		foreach ($genres as $key => $value) {
+			// var_dump($key,$value);
+			if($value === $genre) {
+				// var_dump($key,$value);
+				array_splice($genres, $key, 1, $newGenre);
+			}
+		}
+	}
+	var_dump($genres);
+};*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
