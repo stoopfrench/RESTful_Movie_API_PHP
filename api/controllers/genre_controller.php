@@ -88,7 +88,7 @@ $get_movies_by_genre = function(Request $request, Response $response){
    				"url" => "/api/titles/" . $value['id']
    			]
 		];
-	},$data);
+	},$moviesByGenre);
 
 	return $response->withJson([
 		"genre" => $genre,

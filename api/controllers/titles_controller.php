@@ -63,16 +63,28 @@ $get_movie_by_id = function(Request $request, Response $response){
 			"error" => [
 				"message" => "No movie found with that ID"
 			]
-		]);
+		],404);
 	}
 
 	return $response->withJson([
 		"results" => count($data),
 		"data" => $data[0],
-		"request" => [
-			"type" => "GET",
-			"description" => "get a list of all movies",
-			"url" => "/api/titles"
+		"requests" => [
+			"All" => [
+				"type" => "GET",
+				"description" => "Get a list of all movies",
+				"url" => "/api/titles"
+			],
+			"Update" => [
+				"type" => "PATCH",
+				"description" => "Update this movie",
+				"url" => "/api/titles/" . $data[0]['id']
+			],
+			"Delete" => [
+				"type" => "DELETE",
+				"description" => "Delete this movie",
+				"url" => "/api/titles/" . $data[0]['id']
+			]
 		]
 	],200);
 };
