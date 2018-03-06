@@ -87,7 +87,10 @@ $create_new_movie = function(Request $request, Response $response){
 
 	$a = $request->getParsedBody()['title'];
 	$b = $request->getParsedBody()['year'];
-	$c = $request->getParsedBody()['genres'];
+	
+	$requestGenres = $request->getParsedBody()['genres'];
+	$splitRequestGenres = preg_split("/[\s,]+/", $requestGenres);
+	$c = implode("|", $splitRequestGenres);
 
 	$stmt->execute();
 
