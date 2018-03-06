@@ -56,7 +56,7 @@ GET `api/genre`
 
 **Movies by Genre**
 
-GET `api/genre/<genre>
+GET `api/genre/<genre>`
 
 	Returns a list of movies that have this genre.
 
