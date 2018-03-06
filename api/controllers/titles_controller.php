@@ -28,14 +28,15 @@ $get_all_titles = function(Request $request, Response $response){
     });
 
     $responseData = array_map(function($value){
-		return [	"title" => $value['title'],
-   					"year" => $value['year'],
-   					"id" => $value['id'],
-   					"request" => [
-   						"type" => "GET",
-   						"description" => "get details about movie by ID",
-   						"url" => "/api/titles/" . $value['id']
-   					]
+		return [	
+			"title" => $value['title'],
+			"year" => $value['year'],
+			"id" => $value['id'],
+			"request" => [
+				"type" => "GET",
+				"description" => "get details about movie by ID",
+				"url" => "/api/titles/" . $value['id']
+			]
 		];
 	},$data);
    	$newResponse = [
@@ -66,14 +67,14 @@ $get_movie_by_id = function(Request $request, Response $response){
 	}
 
 	return $response->withJson([
-			"results" => count($data),
-			"data" => $data[0],
-			"request" => [
-				"type" => "GET",
-				"description" => "get a list of all movies",
-				"url" => "/api/titles"
-			]
-		],200);
+		"results" => count($data),
+		"data" => $data[0],
+		"request" => [
+			"type" => "GET",
+			"description" => "get a list of all movies",
+			"url" => "/api/titles"
+		]
+	],200);
 };
 
 //CREATE MOVIE -------------------------------------------------------------
@@ -91,18 +92,18 @@ $create_new_movie = function(Request $request, Response $response){
 	$stmt->execute();
 
 	return $response->withJson([
-			"message" => "New Movie has been Created",
-			"created" => [
-					"title" => $a,
-					"year" => $b,
-					"genres" => $c
-				],
-			"requests" => [
-				"type" => "GET",
-				"description" => "get a list of all movies",
-				"url" => "/api/titles"
-			]
-		],201);
+		"message" => "New Movie has been Created",
+		"created" => [
+				"title" => $a,
+				"year" => $b,
+				"genres" => $c
+			],
+		"requests" => [
+			"type" => "GET",
+			"description" => "get a list of all movies",
+			"url" => "/api/titles"
+		]
+	],201);
 };
 
 //UPDATE MOVIE -------------------------------------------------------------
@@ -134,14 +135,14 @@ $update_movie_by_id = function(Request $request, Response $response){
 	$stmt->execute();
 
 	return $response->withJson([
-			"message" => "Movie has been updated",
-			"updates" => $updates,
-			"request" => [
-				"type" => "GET",
-				"description" => "get a list of all movies",
-				"url" => "/api/titles/".$movie['id']
-			]
-		],200);
+		"message" => "Movie has been updated",
+		"updates" => $updates,
+		"request" => [
+			"type" => "GET",
+			"description" => "get a list of all movies",
+			"url" => "/api/titles/".$movie['id']
+		]
+	],200);
 };
 
 //DELETE MOVIE -------------------------------------------------------------
@@ -162,13 +163,13 @@ $delete_movie_by_id = function(Request $request, Response $response){
 	$result = $mysqli->query($query);
 	
 	return $response->withJson([
-			"message" => "Movie has been Deleted",
-			"request" => [
-				"type" => "GET",
-				"description" => "get a new list of all movies",
-				"url" => "/api/titles"
-			]
-		],200);
+		"message" => "Movie has been Deleted",
+		"request" => [
+			"type" => "GET",
+			"description" => "get a new list of all movies",
+			"url" => "/api/titles"
+		]
+	],200);
 };
 
 

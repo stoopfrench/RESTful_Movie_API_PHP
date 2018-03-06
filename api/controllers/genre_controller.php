@@ -33,19 +33,20 @@ $get_genre_index = function(Request $request, Response $response){
     });
 
     $responseData = array_map(function($value){
-		return [	"genre" => $value,
-   					"request" => [
-   						"type" => "GET",
-   						"description" => "get a list of movies from this Genre",
-   						"url" => "/api/genre/" . $value
-   					]
+		return [	
+			"genre" => $value,
+   			"request" => [
+   				"type" => "GET",
+   				"description" => "get a list of movies from this Genre",
+   				"url" => "/api/genre/" . $value
+   			]
 		];
 	},$newGenreArray);
 
 	return $response->withJson([
-			"results" => count($newGenreArray),
-			"data" => $responseData
-		],200);
+		"results" => count($newGenreArray),
+		"data" => $responseData
+	],200);
 };
 
 //GET MOVIES BY GENRE ------------------------------------------------------
@@ -75,22 +76,24 @@ $get_movies_by_genre = function(Request $request, Response $response){
 	});
 
     $responseData = array_map(function($value){
-		return [	"title" => $value['title'],
-   					"year" => $value['year'],
-   					"id" => $value['id'],
-   					"request" => [
-   						"type" => "GET",
-   						"description" => "get details about movie by ID",
-   						"url" => "/api/titles/" . $value['id']
-   					]
+		return [	
+			"title" => $value['title'],
+   			"year" => $value['year'],
+   			"genres" => $value['genres'],
+   			"id" => $value['id'],
+   			"request" => [
+   				"type" => "GET",
+   				"description" => "get details about movie by ID",
+   				"url" => "/api/titles/" . $value['id']
+   			]
 		];
 	},$data);
 
 	return $response->withJson([
-			"genre" => $genre,
-			"results" => count($moviesByGenre),
-			"data" => $moviesByGenre
-		],200);
+		"genre" => $genre,
+		"results" => count($moviesByGenre),
+		"data" => $responseData
+	],200);
 };
 
 //RENAME A GENRE
