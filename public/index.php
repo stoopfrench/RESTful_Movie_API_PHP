@@ -23,16 +23,6 @@ $container['notFoundHandler'] = function() {
 	};
 };
 
-$container['errorHandler'] = function() {
-	return function($request,$response) {
-		return $response->withJson([
-			"error" => [
-				"message" => "Something has gone wrong"
-			]
-		],500);
-	};
-};
-
 //CORS
 $app->add(function($request, $response, $next) {
     $route = $request->getAttribute("route");
