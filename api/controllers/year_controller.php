@@ -56,6 +56,18 @@ $get_movies_by_year = function(Request $request, Response $response){
 	while($row = $result->fetch_assoc()) {
 		$data[] = $row;
 	}
+	if(count($data) === 0) {
+		return $response->withJson([
+			"error" => [
+				"message" => "Year not found",
+				"request" => [
+					"type" => "GET",
+					"description" => "Get a list of Years",
+					"url" => "/api/year"
+				]
+			]
+		],404);
+	}
 
 	usort($data, function($a,$b) {
 		return strcmp($a['title'],$b['title']);

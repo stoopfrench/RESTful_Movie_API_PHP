@@ -68,11 +68,23 @@ $get_movies_by_genre = function(Request $request, Response $response){
 		$genreString = $value['genres'];
 		$genres = explode("|", $genreString);
 		
-		if(in_array($genre, $genres)) {
+		if(in_array(strtolower($genre), array_map('strtolower',$genres))) {
 			array_push($moviesByGenre, $value);
 		}
 	}
-	usort($moviesByGenre, function($a,$b) {
+	if(count($moviesByGenre) === 0) {
+		return $response->withJson([
+			"error" => [
+				"message" => "Genre not found",
+				"request" => [
+					"type" => "GET",
+					"description" => "Get a list of Genres",
+					"url" => "/api/genre"
+				]
+			]
+		],404);
+	}
+		usort($moviesByGenre, function($a,$b) {
 		return strcmp($a['title'],$b['title']);
 	});
 
@@ -92,7 +104,7 @@ $get_movies_by_genre = function(Request $request, Response $response){
 
 	return $response->withJson([
 		"genre" => $genre,
-		"results" => count($moviesByGenre),
+		"movies" => count($moviesByGenre),
 		"data" => $responseData
 	],200);
 };
