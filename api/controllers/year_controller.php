@@ -14,11 +14,7 @@ $get_year_index = function(Request $request, Response $response){
 		$data[] = $row;
 	}
 	foreach ($data as $value) {
-		$yearString = $value['year'];
-		$years = explode("|", $yearString);
-		foreach ($years as $key => $value) {
-			array_push($yearArray, $years[$key]);
-		}
+		array_push($yearArray, $value['year']);
 	}
 	$uniqueYears = array_unique($yearArray);
 	$newYearArray = array_values($uniqueYears);
@@ -30,9 +26,10 @@ $get_year_index = function(Request $request, Response $response){
         return $yearCount[$a] <= $yearCount[$b] ?  1 : -1;
     });
 
-    $responseData = array_map(function($value){
+    $responseData = array_map(function($value) use ($yearCount){
 		return [	
 			"genre" => $value,
+			"movies" => $yearCount[$value],
 			"request" => [
 				"type" => "GET",
 				"description" => "get a list of movies from this Year",

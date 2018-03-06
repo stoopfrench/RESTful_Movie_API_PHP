@@ -32,9 +32,10 @@ $get_genre_index = function(Request $request, Response $response){
         return $genreCount[$a] <= $genreCount[$b] ?  1 : -1;
     });
 
-    $responseData = array_map(function($value){
+    $responseData = array_map(function($value) use ($genreCount){
 		return [	
 			"genre" => $value,
+			"movies" => $genreCount[$value],
    			"request" => [
    				"type" => "GET",
    				"description" => "get a list of movies from this Genre",
