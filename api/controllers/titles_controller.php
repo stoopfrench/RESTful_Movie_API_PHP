@@ -29,7 +29,7 @@ $get_all_titles = function(Request $request, Response $response){
 
 	$newResponse = $response->withJson($data,200);
 
-	return $newResponse;
+	// return $newResponse;
 };
 
 //GET MOVIE BY ID ----------------------------------------------------------

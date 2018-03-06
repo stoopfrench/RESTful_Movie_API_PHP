@@ -54,6 +54,12 @@ GET `api/genre`
 	
 	Returns a list of ALL the genres in the database sorted by the number of movies in the genre.
 
+**Movies by Genre**
+
+GET `api/genre/<genre>
+
+	Returns a list of movies that have this genre.
+
 **Year Index**
 
 GET `api/year`
