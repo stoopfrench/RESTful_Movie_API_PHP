@@ -5,8 +5,8 @@ use \Psr\Http\Message\ResponseInterface as Response;
 //YEAR INDEX ---------------------------------------------------------------
 $get_year_index = function(Request $request, Response $response){
 	require_once('../api/config/db.php');
+	
 	$yearArray = [];
-
 	$query = "SELECT year FROM movies";
 
 	try {
@@ -60,7 +60,6 @@ $get_movies_by_year = function(Request $request, Response $response){
 	require_once('../api/config/db.php');
 	
 	$year = $request->getAttribute('year');
-
 	$query = "SELECT * FROM movies WHERE year = $year";
 	
 	try{

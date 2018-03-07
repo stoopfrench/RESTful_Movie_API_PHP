@@ -19,9 +19,7 @@ $get_all_titles = function(Request $request, Response $response) {
 			array_push($yearArray,$year['year']);	
 		}
 		$yearCount = array_count_values($yearArray);
-		
 		arsort($yearCount);
-
 	    usort($data, function ($a, $b)  use ($yearCount) {
 	    	if($a['year'] === $b['year']){
 	    		return strcmp($a['title'],$b['title']);
@@ -62,12 +60,10 @@ $get_movie_by_id = function(Request $request, Response $response) {
 	require_once('../api/config/db.php');
 	
 	$id = $request->getAttribute('id');
-
 	$query = "SELECT * FROM movies WHERE id = $id";
 
 	try {
 		$result = $mysqli->query($query);
-
 		$data[] = $result->fetch_assoc();
 
 		if($data === null) {
@@ -157,8 +153,7 @@ $create_new_movie = function(Request $request, Response $response) {
 $update_movie_by_id = function(Request $request, Response $response) {
 	require_once('../api/config/db.php');
 
-	$id = $request->getAttribute('id');
-	
+	$id = $request->getAttribute('id');	
 	$updates = $request->getParsedBody();
 	$movieQuery = "SELECT * FROM movies WHERE id = $id";
 
@@ -213,13 +208,14 @@ $delete_movie_by_id = function(Request $request, Response $response) {
 	try {
 		$movieResult = $mysqli->query($movieQuery);
 		$data = $movieResult->fetch_assoc();
+		
 		if($data === null) {
 			return $response->withJson([
 				"error" => "No movie found with that ID"
 			],404);
+		
 		}
 		$query = "DELETE FROM movies WHERE id = $id";
-
 		$result = $mysqli->query($query);
 		
 		return $response->withJson([

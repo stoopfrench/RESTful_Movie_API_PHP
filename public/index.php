@@ -23,14 +23,31 @@ $container['notFoundHandler'] = function() {
 	};
 };
 
-$container['phpErrorHandler'] = function () {
-    return function ($request, $response, $error) use ($container) {
-        return $response->withJson([
+$container['errorHandler'] = function ($container) {
+    return function ($request, $response, $exception) use ($container) {
+        $responseData = [
             "error" => [
-                "message" => "Something went wrong",
-                "error" => $error
+                "message" => "Something went wrong"
             ]
-        ],500);
+        ];        
+        $response->getBody()->rewind();
+        return $response->withStatus(500)
+                        ->withHeader('Content-Type', 'application/json')
+                        ->write(json_encode($responseData));
+    };
+};
+ 
+$container['phpErrorHandler'] = function ($container) {
+    return function ($request, $response, $error) use ($container) {
+        $responseData = [
+            "error" => [
+                "message" => "Something went wrong"
+            ]
+        ];
+        $response->getBody()->rewind();
+        return $response->withStatus(500)
+                        ->withHeader('Content-Type', 'application/json')
+                        ->write(json_encode($responseData));
     };
 };
 
