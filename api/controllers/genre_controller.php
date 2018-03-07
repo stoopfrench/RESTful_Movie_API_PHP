@@ -3,7 +3,7 @@ use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
 //GENRE INDEX --------------------------------------------------------------
-$get_genre_index = function(Request $request, Response $response){
+$get_genre_index = function(Request $request, Response $response) {
 	require_once('../api/config/db.php');
 	$genreArray = [];
 	$genreCount = [];
@@ -34,7 +34,7 @@ $get_genre_index = function(Request $request, Response $response){
 	        return $genreCount[$a] <= $genreCount[$b] ?  1 : -1;
 	    });
 
-	    $responseData = array_map(function($value) use ($genreCount){
+	    $responseData = array_map(function($value) use ($genreCount) {
 			return [	
 				"genre" => $value,
 				"movies" => $genreCount[$value],
@@ -62,7 +62,7 @@ $get_genre_index = function(Request $request, Response $response){
 };
 
 //GET MOVIES BY GENRE ------------------------------------------------------
-$get_movies_by_genre = function(Request $request, Response $response){
+$get_movies_by_genre = function(Request $request, Response $response) {
 	require_once('../api/config/db.php');
 	$moviesByGenre = [];
 	
@@ -101,7 +101,7 @@ $get_movies_by_genre = function(Request $request, Response $response){
 			return strcmp($a['title'],$b['title']);
 		});
 
-	    $responseData = array_map(function($value){
+	    $responseData = array_map(function($value) {
 			return [	
 				"title" => $value['title'],
 	   			"year" => $value['year'],
@@ -131,33 +131,6 @@ $get_movies_by_genre = function(Request $request, Response $response){
 	}
 };
 
-//RENAME A GENRE
-/*$rename_genre = function(Request $request, Response $response) {
-	require_once('../api/config/db.php');
-
-	$genre = $request->getAttribute('genre');
-	$newGenre = $request->getParsedBody('newName');
-
-	$query = "SELECT genres FROM movies ORDER BY id";
-	$result = $mysqli->query($query);
-
-	while($row = $result->fetch_assoc()) {
-		$data[] = $row;
-	}
-	foreach ($data as $value) {
-		$genreString = $value['genres'];
-		$genres = explode("|", $genreString);
-		// var_dump($genres);
-		foreach ($genres as $key => $value) {
-			// var_dump($key,$value);
-			if($value === $genre) {
-				// var_dump($key,$value);
-				array_splice($genres, $key, 1, $newGenre);
-			}
-		}
-	}
-	var_dump($genres);
-};*/
 
 
 

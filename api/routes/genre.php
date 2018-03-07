@@ -8,5 +8,3 @@ $app->get('/api/genre', $get_genre_index);
 //GET MOVIES BY GENRE
 $app->get('/api/genre/{genre}', $get_movies_by_genre);
 
-//RENAME A GENRE
-// $app->patch('/api/genre/{genre}', $rename_genre);

@@ -23,7 +23,25 @@ $container['notFoundHandler'] = function() {
 	};
 };
 
+$container['phpErrorHandler'] = function () {
+    return function ($request, $response, $error) use ($container) {
+        return $response->withJson([
+            "error" => [
+                "message" => "Something went wrong",
+                "error" => $error
+            ]
+        ],500);
+    };
+};
+
 //CORS
+$app->add(function ($req, $res, $next) {
+    $response = $next($req, $res);
+    return $response
+            ->withHeader('Access-Control-Allow-Origin', '*')
+            ->withHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept, Origin, Authorization');
+});
+
 $app->add(function($request, $response, $next) {
     $route = $request->getAttribute("route");
 

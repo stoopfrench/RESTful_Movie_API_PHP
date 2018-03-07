@@ -12,7 +12,7 @@
 4. Start your server and database.		
 5. Create a new database and name it `movie-database` and create a new table named `movies`.
 6. Make 4 new columns and create the following: `id int (11) Auto-Increment, title varchar (255), year varchar (255), genres varchar (255)`
-7. Import the csv file in the `assets` folder into your .
+7. Import the csv file in the `public/assets` folder into your database.
 8. Use an API Development Enviroment (ex. Postman) to make requests to the API.
 
 

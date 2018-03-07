@@ -3,7 +3,7 @@ use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
 //GET ALL MOVIES -----------------------------------------------------------
-$get_all_titles = function(Request $request, Response $response){
+$get_all_titles = function(Request $request, Response $response) {
 	require_once('../api/config/db.php');
 	$yearArray = [];
 
@@ -41,12 +41,11 @@ $get_all_titles = function(Request $request, Response $response){
 				]
 			];
 		},$data);
-	   	$newResponse = [
-	   		"results" => count($data),
-	   		"data" => $responseData
-	   	];
 
-		return $response->withJson($newResponse,200);
+		return $response->withJson([
+				"results" => count($data),
+		   		"data" => $responseData
+			],200);
 
 	} catch(Error $e) {
 		return $response->withJson([
@@ -59,7 +58,7 @@ $get_all_titles = function(Request $request, Response $response){
 };
 
 //GET MOVIE BY ID ----------------------------------------------------------
-$get_movie_by_id = function(Request $request, Response $response){
+$get_movie_by_id = function(Request $request, Response $response) {
 	require_once('../api/config/db.php');
 	
 	$id = $request->getAttribute('id');
@@ -112,7 +111,7 @@ $get_movie_by_id = function(Request $request, Response $response){
 };
 
 //CREATE MOVIE -------------------------------------------------------------
-$create_new_movie = function(Request $request, Response $response){
+$create_new_movie = function(Request $request, Response $response) {
 	require_once('../api/config/db.php');
 
 	$query = "INSERT INTO movies (`title`,`year`,`genres`) VALUES(?,?,?)";
@@ -155,7 +154,7 @@ $create_new_movie = function(Request $request, Response $response){
 };
 
 //UPDATE MOVIE -------------------------------------------------------------
-$update_movie_by_id = function(Request $request, Response $response){
+$update_movie_by_id = function(Request $request, Response $response) {
 	require_once('../api/config/db.php');
 
 	$id = $request->getAttribute('id');
@@ -205,7 +204,7 @@ $update_movie_by_id = function(Request $request, Response $response){
 };
 
 //DELETE MOVIE -------------------------------------------------------------
-$delete_movie_by_id = function(Request $request, Response $response){
+$delete_movie_by_id = function(Request $request, Response $response) {
 	require_once('../api/config/db.php');
 
 	$id = $request->getAttribute('id');
