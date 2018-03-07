@@ -29,7 +29,6 @@ $get_genre_index = function(Request $request, Response $response) {
 		
 		arsort($genreCount);
 
-
 	    usort($newGenreArray, function ($a, $b)  use ($genreCount) {
 	        return $genreCount[$a] <= $genreCount[$b] ?  1 : -1;
 	    });
@@ -67,7 +66,6 @@ $get_movies_by_genre = function(Request $request, Response $response) {
 	$moviesByGenre = [];
 	
 	$genre = $request->getAttribute('genre');
-
 	$query = "SELECT * FROM movies";
 	
 	try {

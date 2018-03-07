@@ -20,6 +20,7 @@ $get_all_titles = function(Request $request, Response $response) {
 		}
 		$yearCount = array_count_values($yearArray);
 		arsort($yearCount);
+
 	    usort($data, function ($a, $b)  use ($yearCount) {
 	    	if($a['year'] === $b['year']){
 	    		return strcmp($a['title'],$b['title']);
