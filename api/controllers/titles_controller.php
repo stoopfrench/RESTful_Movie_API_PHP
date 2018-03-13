@@ -47,11 +47,11 @@ $get_all_titles = function(Request $request, Response $response) {
 		   		"data" => $responseData
 			],200);*/
 
-	} catch(Error $e) {
+	} catch(Throwable $t) {
 		return $response->withJson([
 			"error" => [
 				"message" => "Something has gone wrong",
-				"error" => $e
+				"error" => $t
 			]
 		],500);
 	}
@@ -63,7 +63,9 @@ $get_movie_by_id = function(Request $request, Response $response) {
 	
 	$id = $request->getAttribute('id');
 
-	$query = "SELECT movies.* , GROUP_CONCAT(genres.genre SEPARATOR '|') AS combGenres, years.year FROM movies INNER JOIN genres ON genres.title = movies.title INNER JOIN years ON years.title = movies.title WHERE movies.id = '$id'";
+	$query = "SELECT movies.* , GROUP_CONCAT(genres.genre SEPARATOR '|') AS combGenres, years.year 
+	FROM movies INNER JOIN genres ON genres.title = movies.title INNER JOIN years ON years.title = movies.title 
+	WHERE movies.id = '$id'";
 
 	try {
 
@@ -106,11 +108,11 @@ $get_movie_by_id = function(Request $request, Response $response) {
 			]
 		],200);
 
-	} catch(Error $e) {
+	} catch(Throwable $t) {
 		return $response->withJson([
 			"error" => [
 				"message" => "Something has gone wrong",
-				"error" => $e
+				"error" => $t
 			]
 		],500);
 	}
@@ -124,6 +126,15 @@ $create_new_movie = function(Request $request, Response $response) {
 	$splitRequestGenres = preg_split("/[\s,]+/", $requestGenres);
 	$joinedGenres = implode('|', $splitRequestGenres);
 
+	if($request->getParsedBody()['title'] === null || $request->getParsedBody()['year'] === null || $request->getParsedBody()['genres'] === null) {
+		return $response->withJson([
+			"error" => [
+				"message" => "Invalid post request",
+				"template" => "{ title: <new name(string)>, year: <new year(number)>, genres: <new genres ( seperated by , )(string)> }"
+			]
+		], 500);
+	}
+
 	$moviesQuery = "INSERT INTO movies (`title`) VALUES (?)";
 
 	try {
@@ -134,11 +145,11 @@ $create_new_movie = function(Request $request, Response $response) {
 
 		$stmt->execute();
 
-	} catch(Error $e) {
+	} catch(Throwable $t) {
 		return $response->withJson([
 			"error" => [
 				"message" => "Something has gone wrong",
-				"error" => $e
+				"error" => $t
 			]
 		],500);
 	}
@@ -157,11 +168,11 @@ $create_new_movie = function(Request $request, Response $response) {
 			$stmt->execute();
 		}
 	
-	} catch(Error $e) {
+	} catch(Throwable $t) {
 		return $response->withJson([
 			"error" => [
 				"message" => "Something has gone wrong",
-				"error" => $e
+				"error" => $t
 			]
 		],500);
 	}
@@ -178,11 +189,11 @@ $create_new_movie = function(Request $request, Response $response) {
 
 			$stmt->execute();
 	
-	} catch(Error $e) {
+	} catch(Throwable $t) {
 		return $response->withJson([
 			"error" => [
 				"message" => "Something has gone wrong",
-				"error" => $e
+				"error" => $t
 			]
 		],500);
 	}
@@ -207,17 +218,18 @@ $update_movie_by_id = function(Request $request, Response $response) {
 
 	$id = $request->getAttribute('id');	
 	$updates = $request->getParsedBody();
-	$movieQuery = "SELECT * FROM movies WHERE id = $id";
+	$movieCheckQuery = "SELECT EXISTS(SELECT 1 FROM movies WHERE id = $id) AS mycheck";
 
 	try {
-		$result = $mysqli->query($movieQuery);
-		$data[] = $result->fetch_assoc();
-		$movie = $data[0];
+		$movieCheckResult = $mysqli->query($movieCheckQuery);
+		$movieCheckData = $movieCheckResult->fetch_assoc();
 
-		if($movie === null) {
+		if($movieCheckData['mycheck'] === '0') {
 			return $response->withJson([
-				"error" => "No movie found with that ID"
-			],404);
+				"error" => [
+					"message" => "No movie found with that ID"
+				]
+			],404);		
 		}
 
 		$query = "UPDATE `movies` SET `title` = ?, `year` = ?, `genres` = ? WHERE `movies`.`id` = $id";
@@ -240,11 +252,11 @@ $update_movie_by_id = function(Request $request, Response $response) {
 			]
 		],200);
 
-	} catch(Error $e) {
+	} catch(Throwable $t) {
 		return $response->withJson([
 			"error" => [
 				"message" => "Something has gone wrong",
-				"error" => $e
+				"error" => $t
 			]
 		],500);
 	}
@@ -269,7 +281,9 @@ $delete_movie_by_id = function(Request $request, Response $response) {
 		],404);
 	}
 
-	$query = "DELETE movies.*, genres.*, years.* FROM movies INNER JOIN genres ON genres.title = movies.title INNER JOIN years ON years.title = movies.title WHERE id = $id";
+	$query = "DELETE movies.*, genres.*, years.* 
+				FROM movies INNER JOIN genres ON genres.title = movies.title INNER JOIN years ON years.title = movies.title 
+				WHERE id = $id";
 
 	try {
 		
@@ -284,11 +298,11 @@ $delete_movie_by_id = function(Request $request, Response $response) {
 			]
 		],200);
 
-	} catch(Error $e) {
+	} catch(Throwable $t) {
 		return $response->withJson([
 			"error" => [
 				"message" => "Something has gone wrong",
-				"error" => $e
+				"error" => $t
 			]
 		],500);
 	}

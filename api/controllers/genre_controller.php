@@ -6,7 +6,10 @@ use \Psr\Http\Message\ResponseInterface as Response;
 $get_genre_index = function(Request $request, Response $response) {
 	require_once('../api/config/db.php');
 
-	$query = "SELECT genre, COUNT(genre) AS count FROM genres GROUP BY genre ORDER BY count DESC";
+	$query = "SELECT genre, COUNT(genre) AS count 
+				FROM genres 
+				GROUP BY genre 
+				ORDER BY count DESC";
 	
 	try {
 		$result = $mysqli->query($query);
@@ -32,11 +35,11 @@ $get_genre_index = function(Request $request, Response $response) {
 			"data" => $responseData
 		],200);
 
-	} catch(Error $e) {
+	} catch(Throwable $t) {
 		return $response->withJson([
 			"error" => [
 				"message" => "Something has gone wrong",
-				"error" => $e
+				"error" => $t
 			]
 		],500);
 	}
@@ -49,7 +52,11 @@ $get_movies_by_genre = function(Request $request, Response $response) {
 	$genre = $request->getAttribute('genre');
 
 	try {
-		$query = "SELECT movies.*, years.year FROM movies INNER JOIN genres ON genres.title = movies.title INNER JOIN years ON years.title = movies.title WHERE genres.genre = '$genre' GROUP BY title ORDER BY title";
+		$query = "SELECT movies.*, years.year 
+		FROM movies INNER JOIN genres ON genres.title = movies.title INNER JOIN years ON years.title = movies.title 
+		WHERE genres.genre = '$genre' 
+		GROUP BY title 
+		ORDER BY title";
 
 		$result = $mysqli->query($query);
 		while ($row = $result->fetch_assoc()) {
@@ -75,11 +82,11 @@ $get_movies_by_genre = function(Request $request, Response $response) {
 			"data" => $responseData
 		],200);
 
-	} catch(Error $e) {
+	} catch(Throwable $t) {
 		return $response->withJson([
 			"error" => [
 				"message" => "Something has gone wrong",
-				"error" => $e
+				"error" => $t
 			]
 		],500);		
 	}
@@ -134,11 +141,11 @@ $rename_genre = function(Request $request, Response $response) {
 			]
 		],200);
 
-	} catch(Error $e) {
+	} catch(Throwable $t) {
 		return $response->withJson([
 			"error" => [
 				"message" => "Something has gone wrong",
-				"error" => $e
+				"error" => $t
 			]
 		],500);	
 	}

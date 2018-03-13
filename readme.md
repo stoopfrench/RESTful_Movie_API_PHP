@@ -34,13 +34,15 @@ POST `api/titles`
 	
 	Creates a new movie in the database.
 	
-	Template: { title: 'string', year: 'string', genres: 'string ( seperated by | )' }
+	Template: { title: 'string', year: 'string', genres: 'string ( seperated by , )' }
 
 **Update Movie**
 
 PATCH `api/titles/<id>`
 	
 	Updates one or more properties of a movie in the database.
+
+	Template: { title: <new title>, year: <new year>, genres: <new genres> }
 
 **Delete Movie**
 
@@ -59,6 +61,14 @@ GET `api/genre`
 GET `api/genre/<genre>`
 
 	Returns a list of movies that have this genre.
+
+**Rename a Genre**
+
+PATCH `api/genre`
+
+	Renames a genre.
+
+	Template: { genre: <genre to rename>, newName: <new name for genre> }
 
 **Year Index**
 

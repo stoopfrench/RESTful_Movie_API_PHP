@@ -80,6 +80,7 @@ $movieCount = 0;
 $genreCount = 0;
 $yearCount = 0;
 
+// Parse .csv file
 $handle = fopen("../../htdocs/movie-api/api/config/sample_csvs/Movie-List.csv", "r");
 if ($handle) { 
     while (($data = fgetcsv($handle)) !== false) {

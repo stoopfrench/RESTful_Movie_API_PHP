@@ -6,7 +6,10 @@ use \Psr\Http\Message\ResponseInterface as Response;
 $get_year_index = function(Request $request, Response $response){
 	require_once('../api/config/db.php');
 	
-	$query = "SELECT year, COUNT(year) AS count FROM years GROUP BY year ORDER BY count DESC";
+	$query = "SELECT year, COUNT(year) AS count 
+				FROM years 
+				GROUP BY year 
+				ORDER BY count DESC";
 
 	try {
 		$result = $mysqli->query($query);
@@ -31,11 +34,11 @@ $get_year_index = function(Request $request, Response $response){
 			"data" => $responseData
 		],200);
 	
-	} catch(Error $e) {
+	} catch(Throwable $t) {
 		return $response->withJson([
 			"error" => [
 				"message" => "Something has gone wrong",
-				"error" => $e
+				"error" => $t
 			]
 		],500);
 	}
@@ -47,7 +50,11 @@ $get_movies_by_year = function(Request $request, Response $response){
 	
 	$year = $request->getAttribute('year');
 
-	$query = "SELECT movies.*, GROUP_CONCAT(genres.genre SEPARATOR '|') AS combGenres FROM movies INNER JOIN genres ON genres.title = movies.title INNER JOIN years ON years.title = movies.title WHERE years.year = '$year' GROUP BY title ORDER BY title";
+	$query = "SELECT movies.*, GROUP_CONCAT(genres.genre SEPARATOR '|') AS combGenres 
+				FROM movies INNER JOIN genres ON genres.title = movies.title INNER JOIN years ON years.title = movies.title 
+				WHERE years.year = '$year' 
+				GROUP BY title 
+				ORDER BY title";
 	
 	try{
 		$result = $mysqli->query($query);
@@ -87,11 +94,11 @@ $get_movies_by_year = function(Request $request, Response $response){
 			"data" => $responseData
 		],200);
 
-	} catch(Error $e) {
+	} catch(Throwable $t) {
 		return $response->withJson([
 			"error" => [
 				"message" => "Something has gone wrong",
-				"error" => $e
+				"error" => $t
 			]
 		],500);		
 	}
