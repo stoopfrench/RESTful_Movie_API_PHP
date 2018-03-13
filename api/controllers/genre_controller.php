@@ -7,9 +7,9 @@ $get_genre_index = function(Request $request, Response $response) {
 	require_once('../api/config/db.php');
 
 	$query = "SELECT genre, COUNT(genre) AS count 
-			FROM genres 
-			GROUP BY genre 
-			ORDER BY count DESC";
+		FROM genres 
+		GROUP BY genre 
+		ORDER BY count DESC";
 	
 	try {
 		$result = $mysqli->query($query);
@@ -53,10 +53,10 @@ $get_movies_by_genre = function(Request $request, Response $response) {
 
 	try {
 		$query = "SELECT movies.* 
-				FROM movies INNER JOIN genres ON genres.title = movies.title
-				WHERE genres.genre = '$genre' 
-				GROUP BY title 
-				ORDER BY title";
+			FROM movies INNER JOIN genres ON genres.title = movies.title
+			WHERE genres.genre = '$genre' 
+			GROUP BY title 
+			ORDER BY title";
 
 		$result = $mysqli->query($query);
 		while ($row = $result->fetch_assoc()) {
