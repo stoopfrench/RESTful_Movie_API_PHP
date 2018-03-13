@@ -92,7 +92,7 @@ $rename_genre = function(Request $request, Response $response) {
 	$genre = $request->getParsedBody()['genre'];
 	$newName = $request->getParsedBody()['newName'];
 
-	if($newName === null) {
+	if($newName === null || $genre === null) {
 		return $response->withJson([
 			"error" => [
 				"message" => "Invalid patch format",
@@ -117,7 +117,7 @@ $rename_genre = function(Request $request, Response $response) {
 	}
 
 	try {
-		
+
 		$query = "UPDATE `genres` SET `genre` = ? WHERE `genre` = '$genre'";
 
 		$stmt = $mysqli->prepare($query);
