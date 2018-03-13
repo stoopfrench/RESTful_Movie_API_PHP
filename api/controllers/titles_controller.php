@@ -7,8 +7,8 @@ $get_all_titles = function(Request $request, Response $response) {
 	require_once('../api/config/db.php');
 
 	$query = "SELECT B.*
-				FROM (SELECT year, COUNT(1) occurrences FROM movies GROUP BY year) AS A LEFT JOIN movies AS B USING (year) 
-				ORDER BY A.occurrences DESC, title";
+			FROM (SELECT year, COUNT(1) occurrences FROM movies GROUP BY year) AS A LEFT JOIN movies AS B USING (year) 
+			ORDER BY A.occurrences DESC, title";
 		
 	try {
 
@@ -53,8 +53,8 @@ $get_movie_by_id = function(Request $request, Response $response) {
 	$id = $request->getAttribute('id');
 
 	$query = "SELECT movies.* , GROUP_CONCAT(genres.genre SEPARATOR '|') AS combGenres
-	FROM movies INNER JOIN genres ON genres.title = movies.title 
-	WHERE movies.id = '$id'";
+			FROM movies INNER JOIN genres ON genres.title = movies.title 
+			WHERE movies.id = '$id'";
 
 	try {
 
@@ -304,8 +304,8 @@ $delete_movie_by_id = function(Request $request, Response $response) {
 	}
 
 	$query = "DELETE movies.*, genres.* 
-				FROM movies INNER JOIN genres ON genres.title = movies.title 
-				WHERE id = $id";
+			FROM movies INNER JOIN genres ON genres.title = movies.title 
+			WHERE id = $id";
 
 	try {
 		
