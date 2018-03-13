@@ -20,7 +20,3 @@ $app->delete('/api/titles/{id}', $delete_movie_by_id);
 
 
 
-
-
-
-

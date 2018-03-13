@@ -6,8 +6,7 @@ use \Psr\Http\Message\ResponseInterface as Response;
 $get_year_index = function(Request $request, Response $response){
 	require_once('../api/config/db.php');
 	
-	$yearArray = [];
-	$query = "SELECT year FROM movies";
+	$query = "SELECT year, COUNT(year) AS count FROM years GROUP BY year ORDER BY count DESC";
 
 	try {
 		$result = $mysqli->query($query);
@@ -15,33 +14,20 @@ $get_year_index = function(Request $request, Response $response){
 		while($row = $result->fetch_assoc()) {
 			$data[] = $row;
 		}
-		foreach ($data as $value) {
-			array_push($yearArray, $value['year']);
-		}
-		$uniqueYears = array_unique($yearArray);
-		$newYearArray = array_values($uniqueYears);
-		$yearCount = array_count_values($yearArray);
-		arsort($yearCount);
-
-	    usort($newYearArray, function ($a, $b)  use ($yearCount) {
-
-	        return $yearCount[$a] <= $yearCount[$b] ?  1 : -1;
-	    });
-
-	    $responseData = array_map(function($value) use ($yearCount){
+	    $responseData = array_map(function($value){
 			return [	
-				"genre" => $value,
-				"movies" => $yearCount[$value],
+				"year" => $value['year'],
+				"movies" => $value['count'],
 				"request" => [
 					"type" => "GET",
 					"description" => "get a list of movies from this Year",
-					"url" => "/api/genre/" . $value
+					"url" => "/api/genre/" . $value['year']
 				]
 			];
-		},$newYearArray);
+		},$data);
 
 		return $response->withJson([
-			"results" => count($newYearArray),
+			"results" => count($data),
 			"data" => $responseData
 		],200);
 	
@@ -60,7 +46,8 @@ $get_movies_by_year = function(Request $request, Response $response){
 	require_once('../api/config/db.php');
 	
 	$year = $request->getAttribute('year');
-	$query = "SELECT * FROM movies WHERE year = $year";
+
+	$query = "SELECT movies.*, GROUP_CONCAT(genres.genre SEPARATOR '|') AS combGenres FROM movies INNER JOIN genres ON genres.title = movies.title INNER JOIN years ON years.title = movies.title WHERE years.year = '$year' GROUP BY title ORDER BY title";
 	
 	try{
 		$result = $mysqli->query($query);
@@ -68,6 +55,7 @@ $get_movies_by_year = function(Request $request, Response $response){
 		while($row = $result->fetch_assoc()) {
 			$data[] = $row;
 		}
+
 		if(count($data) === 0) {
 			return $response->withJson([
 				"error" => [
@@ -80,17 +68,11 @@ $get_movies_by_year = function(Request $request, Response $response){
 				]
 			],404);
 		}
-
-		usort($data, function($a,$b) {
-			return strcmp($a['title'],$b['title']);
-		});
-
 	    $responseData = array_map(function($value){
 			return [	
 				"title" => $value['title'],
-	   			"year" => $value['year'],
-	   			"genres" => $value['genres'],
 	   			"id" => $value['id'],
+	   			"genres" => $value['combGenres'],
 	   			"request" => [
 	   				"type" => "GET",
 	   				"description" => "get details about movie with this ID",
@@ -113,5 +95,8 @@ $get_movies_by_year = function(Request $request, Response $response){
 			]
 		],500);		
 	}
-
 };
+
+
+
+

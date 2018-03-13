@@ -11,7 +11,3 @@ $app->get('/api/year/{year}', $get_movies_by_year);
 
 
 
-
-
-
-

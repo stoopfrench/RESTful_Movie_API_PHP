@@ -5,10 +5,8 @@ use \Psr\Http\Message\ResponseInterface as Response;
 //GENRE INDEX --------------------------------------------------------------
 $get_genre_index = function(Request $request, Response $response) {
 	require_once('../api/config/db.php');
-	$genreArray = [];
-	$genreCount = [];
 
-	$query = "SELECT genres FROM movies";
+	$query = "SELECT genre, COUNT(genre) AS count FROM genres GROUP BY genre ORDER BY count DESC";
 	
 	try {
 		$result = $mysqli->query($query);
@@ -16,37 +14,21 @@ $get_genre_index = function(Request $request, Response $response) {
 		while($row = $result->fetch_assoc()) {
 			$data[] = $row;
 		}
-		foreach ($data as $value) {
-			$genreString = $value['genres'];
-			$genres = explode("|", $genreString);
-			foreach ($genres as $key => $value) {
-				array_push($genreArray, $genres[$key]);
-			}
-		}
-		$uniqueGenres = array_unique($genreArray);
-		$newGenreArray = array_values($uniqueGenres);
-		$genreCount = array_count_values($genreArray);
-		
-		arsort($genreCount);
 
-	    usort($newGenreArray, function ($a, $b)  use ($genreCount) {
-	        return $genreCount[$a] <= $genreCount[$b] ?  1 : -1;
-	    });
-
-	    $responseData = array_map(function($value) use ($genreCount) {
+	    $responseData = array_map(function($value) {
 			return [	
-				"genre" => $value,
-				"movies" => $genreCount[$value],
+				"genre" => $value['genre'],
+				"movies" => $value['count'],
 	   			"request" => [
 	   				"type" => "GET",
 	   				"description" => "get a list of movies from this Genre",
-	   				"url" => "/api/genre/" . $value
+	   				"url" => "/api/genre/" . $value['genre']
 	   			]
 			];
-		},$newGenreArray);
+		},$data);
 
 		return $response->withJson([
-			"results" => count($newGenreArray),
+			"results" => count($data),
 			"data" => $responseData
 		],200);
 
@@ -63,59 +45,33 @@ $get_genre_index = function(Request $request, Response $response) {
 //GET MOVIES BY GENRE ------------------------------------------------------
 $get_movies_by_genre = function(Request $request, Response $response) {
 	require_once('../api/config/db.php');
-	$moviesByGenre = [];
 	
 	$genre = $request->getAttribute('genre');
-	$query = "SELECT * FROM movies";
-	
-	try {
-		$result = $mysqli->query($query);
 
-		while($row = $result->fetch_assoc()) {
+	try {
+		$query = "SELECT movies.*, years.year FROM movies INNER JOIN genres ON genres.title = movies.title INNER JOIN years ON years.title = movies.title WHERE genres.genre = '$genre' GROUP BY title ORDER BY title";
+
+		$result = $mysqli->query($query);
+		while ($row = $result->fetch_assoc()) {
 			$data[] = $row;
 		}
 
-		foreach ($data as $value) {
-			$genreString = $value['genres'];
-			$genres = explode("|", $genreString);
-
-			if(in_array(strtolower($genre), array_map('strtolower',$genres))) {
-				array_push($moviesByGenre, $value);
-			}
-		}
-		if(count($moviesByGenre) === 0) {
-			return $response->withJson([
-				"error" => [
-					"message" => "Genre not found",
-					"request" => [
-						"type" => "GET",
-						"description" => "Get a list of Genres",
-						"url" => "/api/genre"
-					]
-				]
-			],404);
-		}
-			usort($moviesByGenre, function($a,$b) {
-			return strcmp($a['title'],$b['title']);
-		});
-
-	    $responseData = array_map(function($value) {
-			return [	
+		$responseData = array_map(function($value) {
+			return [
 				"title" => $value['title'],
-	   			"year" => $value['year'],
-	   			"genres" => $value['genres'],
-	   			"id" => $value['id'],
-	   			"request" => [
-	   				"type" => "GET",
-	   				"description" => "get details about movie by ID",
-	   				"url" => "/api/titles/" . $value['id']
-	   			]
+				"year" => $value['year'],
+				"id" => $value['id'],
+				"request" => [
+					"type" => "GET",
+					"description" => "Get details about this movie",
+					"url" => "/api/title/" . $value['id']
+				]
 			];
-		},$moviesByGenre);
+		},$data);
 
 		return $response->withJson([
 			"genre" => $genre,
-			"movies" => count($moviesByGenre),
+			"results" => count($data),
 			"data" => $responseData
 		],200);
 
@@ -125,25 +81,68 @@ $get_movies_by_genre = function(Request $request, Response $response) {
 				"message" => "Something has gone wrong",
 				"error" => $e
 			]
-		],500);
+		],500);		
 	}
 };
 
+// RENAME A GENRE ----------------------------------------------------------
+$rename_genre = function(Request $request, Response $response) {
+	require_once('../api/config/db.php');
 
+	$genre = $request->getParsedBody()['genre'];
+	$newName = $request->getParsedBody()['newName'];
 
+	if($newName === null) {
+		return $response->withJson([
+			"error" => [
+				"message" => "Invalid patch format",
+				"template" => [
+					"genre" => "<genre to rename>",
+					"newName" => "<new name for genre>"
+				]
+			]
+		],500);
+	}
+	$checkQuery = "SELECT EXISTS(SELECT 1 FROM genres WHERE genre = '$genre') AS mycheck";
 
+	$checkQueryResult = $mysqli->query($checkQuery);
+	$checkQueryData = $checkQueryResult->fetch_assoc();
 
+	if($checkQueryData['mycheck'] === '0') {
+		return $response->withJson([
+			"error" => [
+				"message" => "Genre not found"
+			]
+		],404);		
+	}
 
+	try {
+		
+		$query = "UPDATE `genres` SET `genre` = ? WHERE `genre` = '$genre'";
 
+		$stmt = $mysqli->prepare($query);
+		$stmt->bind_param("s", $newName);
 
+		$stmt->execute();
+			
+		return $response->withJson([
+			"message" => $genre . " has been renamed " . $newName,
+			"request" => [
+				"type" => "GET",
+				"description" => "get a list of all movies",
+				"url" => "/api/genre/". $newName
+			]
+		],200);
 
-
-
-
-
-
-
-
+	} catch(Error $e) {
+		return $response->withJson([
+			"error" => [
+				"message" => "Something has gone wrong",
+				"error" => $e
+			]
+		],500);	
+	}
+};
 
 
 
