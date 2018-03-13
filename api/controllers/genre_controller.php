@@ -52,8 +52,8 @@ $get_movies_by_genre = function(Request $request, Response $response) {
 	$genre = $request->getAttribute('genre');
 
 	try {
-		$query = "SELECT movies.*, years.year 
-		FROM movies INNER JOIN genres ON genres.title = movies.title INNER JOIN years ON years.title = movies.title 
+		$query = "SELECT movies.* 
+		FROM movies INNER JOIN genres ON genres.title = movies.title
 		WHERE genres.genre = '$genre' 
 		GROUP BY title 
 		ORDER BY title";

@@ -42,6 +42,7 @@ if ($mysqli->connect_error) {
 $tableSql = "CREATE TABLE movies (
 id INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY, 
 title VARCHAR(255) NOT NULL,
+year INT(11) NOT NULL,
 created TIMESTAMP,
 UNIQUE (title)
 ) CHARACTER SET utf8 COLLATE utf8_general_ci";
@@ -64,7 +65,7 @@ if ($mysqli->query($genreSql) === TRUE) {
 	echo "Error creating this table: " . $mysqli->error;
 }
 
-// create year table
+/*// create year table
 $yearSql = "CREATE TABLE years (
 year int(11) NOT NULL,
 title VARCHAR(255) NOT NULL
@@ -74,11 +75,11 @@ if ($mysqli->query($yearSql) === TRUE) {
 	echo "Table 'years' created successfully\n";
 } else {
 	echo "Error creating this table: " . $mysqli->error;
-}
+}*/
 
 $movieCount = 0;
 $genreCount = 0;
-$yearCount = 0;
+// $yearCount = 0;
 
 // Parse .csv file
 $handle = fopen("../../htdocs/movie-api/api/config/sample_csvs/Movie-List.csv", "r");
@@ -90,7 +91,7 @@ if ($handle) {
     	$year = $data[2];
     	$genres = $data[3];
 
-    	$insertMovies = "INSERT INTO movies (`id`,`title`) VALUES ('$id','$title')";
+    	$insertMovies = "INSERT INTO movies (`id`,`title`,`year`) VALUES ('$id','$title','$year')";
 
     	if(mysqli_query($mysqli, $insertMovies)) {
     		++$movieCount;
@@ -110,18 +111,17 @@ if ($handle) {
 	    	}
     	}
 
-    	$insertYears = "INSERT INTO years (`year`,`title`) VALUES ('$year','$title')";
+/*    	$insertYears = "INSERT INTO years (`year`,`title`) VALUES ('$year','$title')";
     	
     	if(mysqli_query($mysqli, $insertYears)) {
     		++$yearCount;
     	} else {
 		    echo "Error creating table: " . mysqli_error($mysqli);
-    	}
+    	}*/
 
     }  
 	echo $movieCount . " lines were imported into 'movies' successfully\n";
 	echo $genreCount . " lines were imported into 'genres' successfully\n";
-	echo $yearCount . " lines were imported into 'years' successfully\n";
 	
     fclose($handle);
 };

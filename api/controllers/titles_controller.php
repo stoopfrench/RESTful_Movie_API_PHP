@@ -6,30 +6,19 @@ use \Psr\Http\Message\ResponseInterface as Response;
 $get_all_titles = function(Request $request, Response $response) {
 	require_once('../api/config/db.php');
 
-	$query = "SELECT * , COUNT(year) AS yearCount FROM movies GROUP BY title ORDER BY yearCount";
-
-	// -- $yearCountQuery = "SELECT year, COUNT(year) AS yearCount FROM movies GROUP BY year ORDER BY yearCount DESC";
+	$query = "SELECT B.*
+				FROM (SELECT year, COUNT(1) occurrences FROM movies GROUP BY year) AS A LEFT JOIN movies AS B USING (year) 
+				ORDER BY A.occurrences DESC, title";
 		
 	try {
-
-		// $yearCountResult = $mysqli->query($yearCountQuery);
-
-		// while($row = $yearCountResult->fetch_assoc()) {
-		// 	$yearCountData[] = $row;
-		// }
-		// var_dump($yearCountData);
 
 		$result = $mysqli->query($query);
 
 		while($row = $result->fetch_assoc()) {
 			$data[] = $row;
 		}
-		var_dump($data);
 
-		// var_dump($data);
-
-
-/*	    $responseData = array_map(function($value){
+	    $responseData = array_map(function($value){
 			return [	
 				"title" => $value['title'],
 				"year" => $value['year'],
@@ -45,7 +34,7 @@ $get_all_titles = function(Request $request, Response $response) {
 		return $response->withJson([
 				"results" => count($data),
 		   		"data" => $responseData
-			],200);*/
+			],200);
 
 	} catch(Throwable $t) {
 		return $response->withJson([
@@ -63,8 +52,8 @@ $get_movie_by_id = function(Request $request, Response $response) {
 	
 	$id = $request->getAttribute('id');
 
-	$query = "SELECT movies.* , GROUP_CONCAT(genres.genre SEPARATOR '|') AS combGenres, years.year 
-	FROM movies INNER JOIN genres ON genres.title = movies.title INNER JOIN years ON years.title = movies.title 
+	$query = "SELECT movies.* , GROUP_CONCAT(genres.genre SEPARATOR '|') AS combGenres
+	FROM movies INNER JOIN genres ON genres.title = movies.title 
 	WHERE movies.id = '$id'";
 
 	try {
@@ -130,18 +119,19 @@ $create_new_movie = function(Request $request, Response $response) {
 		return $response->withJson([
 			"error" => [
 				"message" => "Invalid post request",
-				"template" => "{ title: <new name(string)>, year: <new year(number)>, genres: <new genres ( seperated by , )(string)> }"
+				"template" => "{ title: <new name(string)>, year: <new year(number)>, genres: <new genres ( (string) seperated by , )> }"
 			]
 		], 500);
 	}
 
-	$moviesQuery = "INSERT INTO movies (`title`) VALUES (?)";
+	$moviesQuery = "INSERT INTO movies (`title`, `year`) VALUES (?,?)";
 
 	try {
 		$stmt = $mysqli->prepare($moviesQuery);
-		$stmt->bind_param("s", $a);
+		$stmt->bind_param("ss", $a, $b);
 
 		$a = $request->getParsedBody()['title'];
+		$b = $request->getParsedBody()['year'];
 
 		$stmt->execute();
 
@@ -177,26 +167,6 @@ $create_new_movie = function(Request $request, Response $response) {
 		],500);
 	}
 
-	$yearsQuery = "INSERT INTO years (`year`,`title`) VALUES (?,?)";
-
-	try {
-		
-		$stmt = $mysqli->prepare($yearsQuery);
-		$stmt->bind_param("ss", $a, $b);
-		
-			$a = $request->getParsedBody()['year'];
-			$b = $request->getParsedBody()['title'];
-
-			$stmt->execute();
-	
-	} catch(Throwable $t) {
-		return $response->withJson([
-			"error" => [
-				"message" => "Something has gone wrong",
-				"error" => $t
-			]
-		],500);
-	}
 		return $response->withJson([
 			"message" => "New Movie has been Created",
 			"created" => [
@@ -232,15 +202,67 @@ $update_movie_by_id = function(Request $request, Response $response) {
 			],404);		
 		}
 
-		$query = "UPDATE `movies` SET `title` = ?, `year` = ?, `genres` = ? WHERE `movies`.`id` = $id";
-		$stmt = $mysqli->prepare($query);
-		$stmt->bind_param("sss", $a, $b, $c);
+	if($request->getParsedBody()['title'] !== null) {
+		$titleUpdateQuery = "UPDATE `movies` SET `title` = ? WHERE `movies`.`id` = $id";
 
-		$a = (array_key_exists('title', $updates)) ? $updates['title'] : $movie['title'];
-		$b = (array_key_exists('year', $updates)) ? $updates['year'] : $movie['year'];
-		$c = (array_key_exists('genres', $updates)) ? $updates['genres'] : $movie['genres'];
+		try {	
+			$stmt = $mysqli->prepare($titleUpdateQuery);
+			$stmt->bind_param("s", $a);
 
-		$stmt->execute();
+			$a = $request->getParsedBody()['title'];
+
+			$stmt->execute();
+		} catch(Throwable $t) {
+			return $response->withJson([
+				"error" => [
+					"message" => "Something has gone wrong",
+					"error" => $t
+				]
+			],500);
+		}
+	}
+	
+	if($request->getParsedBody()['year'] !== null) {	
+		$yearUpdateQuery = "UPDATE `movies` `year` = ? WHERE `movies`.`id` = $id";
+		
+		try {
+			$stmt = $mysqli->prepare($yearUpdateQuery);
+			$stmt->bind_param("s", $a);
+
+			$a = $request->getParsedBody()['year'];
+
+			$stmt->execute();
+		
+		} catch(Throwable $t) {
+			return $response->withJson([
+				"error" => [
+					"message" => "Something has gone wrong",
+					"error" => $t
+				]
+			],500);
+		}
+	}
+		
+	if($request->getParsedBody()['genres'] !== null) {
+		$genresUpdateQuery = "UPDATE `movies` SET `genres` = ? WHERE `movies`.`id` = $id";
+		
+		try {
+			$stmt = $mysqli->prepare($genresUpdateQuery);
+			$stmt->bind_param("s", $a);
+
+			$a = $request->getParsedBody()['genres'];
+
+			$stmt->execute();
+		
+		} catch(Throwable $t) {
+			return $response->withJson([
+				"error" => [
+					"message" => "Something has gone wrong",
+					"error" => $t
+				]
+			],500);
+		}
+	}
 
 		return $response->withJson([
 			"message" => "Movie has been updated",
@@ -281,8 +303,8 @@ $delete_movie_by_id = function(Request $request, Response $response) {
 		],404);
 	}
 
-	$query = "DELETE movies.*, genres.*, years.* 
-				FROM movies INNER JOIN genres ON genres.title = movies.title INNER JOIN years ON years.title = movies.title 
+	$query = "DELETE movies.*, genres.* 
+				FROM movies INNER JOIN genres ON genres.title = movies.title 
 				WHERE id = $id";
 
 	try {

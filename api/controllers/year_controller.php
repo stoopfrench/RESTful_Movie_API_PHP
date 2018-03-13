@@ -7,7 +7,7 @@ $get_year_index = function(Request $request, Response $response){
 	require_once('../api/config/db.php');
 	
 	$query = "SELECT year, COUNT(year) AS count 
-				FROM years 
+				FROM movies 
 				GROUP BY year 
 				ORDER BY count DESC";
 
@@ -51,8 +51,8 @@ $get_movies_by_year = function(Request $request, Response $response){
 	$year = $request->getAttribute('year');
 
 	$query = "SELECT movies.*, GROUP_CONCAT(genres.genre SEPARATOR '|') AS combGenres 
-				FROM movies INNER JOIN genres ON genres.title = movies.title INNER JOIN years ON years.title = movies.title 
-				WHERE years.year = '$year' 
+				FROM movies INNER JOIN genres ON genres.title = movies.title 
+				WHERE movies.year = '$year' 
 				GROUP BY title 
 				ORDER BY title";
 	
