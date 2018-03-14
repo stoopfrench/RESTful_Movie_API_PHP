@@ -23,6 +23,10 @@ GET `api/titles`
  	
  	Returns ALL the titles in the database
 
+ 	Sort By: 
+ 		Alphabetically by Title: api/titles?sort=title
+ 		ID: api/titles?sort=id
+
 GET `api/titles/<id>`
  	
  	Returns details about the movie stored with that ID
@@ -55,6 +59,9 @@ GET `api/genre`
 	
 	Returns a list of ALL the genres in the database sorted by the number of movies in the genre.
 
+	Sort By:
+		Alphabetically by Genre: api/genre?sort=genre
+
 **Movies by Genre**
 
 GET `api/genre/<genre>`
@@ -74,6 +81,9 @@ PATCH `api/genre`
 GET `api/year`
 	
 	Returns a list of ALL the years in the database sorted by the number of movies released that year.
+
+	Sort By:
+		Numerically by Year: api/year?sort=year
 
 **Movies by Year**
 
