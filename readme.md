@@ -5,13 +5,11 @@
 **INSTALLATION -----------------------------------------------------------------------------**
 
 1. Clone this repository in your `htdocs` directory:
-	`git clone https://github.com/stoopfrench/movie_api_mongo.git`
-2. cd into the directory:
-3. Install Dependencies:
-	`php composer.phar install`
+	`git clone https://github.com/stoopfrench/RESTful_Movie_API_PHP.git`
+2. cd into the directory: `RESTful_Movie_API_PHP`
+3. Install Dependencies: `php composer.phar install`
 4. Start your server and database.		
-5. Run the custom seeder to build the database, tables and import data from sample .csv file.
-	`composer seed`
+5. Run the custom seeder to build the database, tables and import data from sample .csv file: `composer seed`
 6. Use an API Development Enviroment (ex. Postman) to make requests to the API.
 
 

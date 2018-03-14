@@ -9,7 +9,7 @@ $get_all_titles = function(Request $request, Response $response) {
 	parse_str($_SERVER['QUERY_STRING'], $queries[]);
 
 	$query = "SELECT B.*
-		FROM (SELECT year, COUNT(1) occurrences FROM movies GROUP BY year) AS A LEFT JOIN movies AS B USING (year) 
+		FROM (SELECT year, COUNT(*) occurrences FROM movies GROUP BY year) AS A LEFT JOIN movies AS B USING (year) 
 		ORDER BY A.occurrences DESC, title";
 		
 	try {
