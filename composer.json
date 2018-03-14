@@ -3,6 +3,7 @@
         "slim/slim": "^3.0"
     },
     "scripts": {
-    	"seeder": "@php ./api/config/db_seeder.php"
+    	"seed": "@php ./api/config/db_seeder.php",
+    	"export": "@php ./api/config/db_exporter.php"
     }
 }

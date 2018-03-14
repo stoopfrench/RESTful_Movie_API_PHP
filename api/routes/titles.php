@@ -2,10 +2,10 @@
 
 require_once '../api/controllers/titles_controller.php';
 
-//GET ALL MOVIES
+//GET ALL TITLES
 $app->get('/api/titles', $get_all_titles);
 
-//GET MOVIE BY ID
+//GET MOVIE DETAILS BY ID
 $app->get('/api/titles/{id}', $get_movie_by_id);
 
 //CREATE MOVIE

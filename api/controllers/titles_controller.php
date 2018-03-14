@@ -2,9 +2,11 @@
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
-//GET ALL MOVIES -----------------------------------------------------------
+//GET ALL TITLES -----------------------------------------------------------
 $get_all_titles = function(Request $request, Response $response) {
 	require_once('../api/config/db.php');
+
+	parse_str($_SERVER['QUERY_STRING'], $queries[]);
 
 	$query = "SELECT B.*
 		FROM (SELECT year, COUNT(1) occurrences FROM movies GROUP BY year) AS A LEFT JOIN movies AS B USING (year) 
@@ -16,6 +18,18 @@ $get_all_titles = function(Request $request, Response $response) {
 
 		while($row = $result->fetch_assoc()) {
 			$data[] = $row;
+		}
+
+		if(array_key_exists('sort', $queries[0])) {
+			if($queries[0]['sort'] === 'id') {
+				usort($data, function($a,$b) {
+					return $a['id'] - $b['id'];
+				});
+			} else if ($queries[0]['sort'] === 'title') {
+				usort($data, function($a,$b) {
+					return strcmp($a['title'], $b['title']);
+				});
+			}
 		}
 
 	    $responseData = array_map(function($value){
@@ -46,7 +60,7 @@ $get_all_titles = function(Request $request, Response $response) {
 	}
 };
 
-//GET MOVIE BY ID ----------------------------------------------------------
+//GET MOVIE DETAILS BY ID ----------------------------------------------------------
 $get_movie_by_id = function(Request $request, Response $response) {
 	require_once('../api/config/db.php');
 	
@@ -87,7 +101,8 @@ $get_movie_by_id = function(Request $request, Response $response) {
 				"Update" => [
 					"type" => "PATCH",
 					"description" => "Update this movie",
-					"url" => "/api/titles/" . $data[0]['id']
+					"url" => "/api/titles/" . $data[0]['id'],
+					"template" => "{ <property (title,year,genre)> : <new property value> }"
 				],
 				"Delete" => [
 					"type" => "DELETE",

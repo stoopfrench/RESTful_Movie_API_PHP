@@ -5,6 +5,8 @@ use \Psr\Http\Message\ResponseInterface as Response;
 //YEAR INDEX ---------------------------------------------------------------
 $get_year_index = function(Request $request, Response $response){
 	require_once('../api/config/db.php');
+
+	parse_str($_SERVER['QUERY_STRING'], $queries[]);
 	
 	$query = "SELECT year, COUNT(year) AS count 
 		FROM movies 
@@ -17,6 +19,15 @@ $get_year_index = function(Request $request, Response $response){
 		while($row = $result->fetch_assoc()) {
 			$data[] = $row;
 		}
+
+		if(array_key_exists('sort', $queries[0])) {
+			if ($queries[0]['sort'] === 'year') {
+				usort($data, function($a,$b) {
+					return ($a['year'] - $b['year']);
+				});
+			}
+		}
+
 	    $responseData = array_map(function($value){
 			return [	
 				"year" => $value['year'],

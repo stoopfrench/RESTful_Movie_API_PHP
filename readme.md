@@ -11,21 +11,21 @@
 	`php composer.phar install`
 4. Start your server and database.		
 5. Run the custom seeder to build the database, tables and import data from sample .csv file.
-	`composer seeder`
+	`composer seed`
 6. Use an API Development Enviroment (ex. Postman) to make requests to the API.
 
 
 **ENDPOINTS --------------------------------------------------------------------------------**
 
-**Movie Search**
+**Title Search**
 
 GET `api/titles`
  	
- 	Returns ALL the movies in the database
+ 	Returns ALL the titles in the database
 
 GET `api/titles/<id>`
  	
- 	Returns the movie stored with that ID
+ 	Returns details about the movie stored with that ID
 
 **Create New Movie**
 
@@ -41,7 +41,7 @@ PATCH `api/titles/<id>`
 	
 	Updates one or more properties of a movie in the database.
 
-	Template: { title: <new title>, year: <new year>, genres: <new genres> }
+	Template: { <property (title,year,genre)> : <new property value> }
 
 **Delete Movie**
 

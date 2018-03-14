@@ -65,24 +65,11 @@ if ($mysqli->query($genreSql) === TRUE) {
 	echo "Error creating this table: " . $mysqli->error;
 }
 
-/*// create year table
-$yearSql = "CREATE TABLE years (
-year int(11) NOT NULL,
-title VARCHAR(255) NOT NULL
-) CHARACTER SET utf8 COLLATE utf8_general_ci";
-
-if ($mysqli->query($yearSql) === TRUE) {
-	echo "Table 'years' created successfully\n";
-} else {
-	echo "Error creating this table: " . $mysqli->error;
-}*/
-
 $movieCount = 0;
 $genreCount = 0;
-// $yearCount = 0;
 
 // Parse .csv file
-$handle = fopen("../../htdocs/movie-api/api/config/sample_csvs/Movie-List.csv", "r");
+$handle = fopen("api/config/sample_csvs/Movie-List.csv", "r");
 if ($handle) { 
     while (($data = fgetcsv($handle)) !== false) {
 
@@ -110,15 +97,6 @@ if ($handle) {
 			    echo "Error creating table: " . mysqli_error($mysqli);
 	    	}
     	}
-
-/*    	$insertYears = "INSERT INTO years (`year`,`title`) VALUES ('$year','$title')";
-    	
-    	if(mysqli_query($mysqli, $insertYears)) {
-    		++$yearCount;
-    	} else {
-		    echo "Error creating table: " . mysqli_error($mysqli);
-    	}*/
-
     }  
 	echo $movieCount . " lines were imported into 'movies' successfully\n";
 	echo $genreCount . " lines were imported into 'genres' successfully\n";

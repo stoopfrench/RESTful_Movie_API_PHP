@@ -6,6 +6,8 @@ use \Psr\Http\Message\ResponseInterface as Response;
 $get_genre_index = function(Request $request, Response $response) {
 	require_once('../api/config/db.php');
 
+	parse_str($_SERVER['QUERY_STRING'], $queries[]);
+
 	$query = "SELECT genre, COUNT(genre) AS count 
 		FROM genres 
 		GROUP BY genre 
@@ -17,6 +19,14 @@ $get_genre_index = function(Request $request, Response $response) {
 		while($row = $result->fetch_assoc()) {
 			$data[] = $row;
 		}
+
+		if(array_key_exists('sort', $queries[0])) {
+			if ($queries[0]['sort'] === 'genre') {
+				usort($data, function($a,$b) {
+					return strcmp($a['genre'], $b['genre']);
+				});
+			}
+		}		
 
 	    $responseData = array_map(function($value) {
 			return [	
@@ -110,6 +120,7 @@ $rename_genre = function(Request $request, Response $response) {
 			]
 		],500);
 	}
+	
 	$checkQuery = "SELECT EXISTS(SELECT 1 FROM genres WHERE genre = '$genre') AS mycheck";
 
 	$checkQueryResult = $mysqli->query($checkQuery);
