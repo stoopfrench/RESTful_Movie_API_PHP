@@ -1,7 +1,7 @@
 <?php
 
 $dotenv = new Dotenv\Dotenv('../');
-$dotenv->overload();
+$dotenv->load();
 
 $host = getenv('DBHOST');
 $user = getenv('DBUSER');
