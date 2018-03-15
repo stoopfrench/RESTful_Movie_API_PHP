@@ -13,6 +13,11 @@
     },
     "scripts": {
     	"seed": "@php ./api/config/db_seeder.php",
-    	"export": "@php ./api/config/db_exporter.php"
-    }
+    	"export": "@php ./api/config/db_exporter.php",
+        "test": "./vendor/bin/phpunit --colors=always"
+    },
+	"require-dev": {
+		"phpunit/phpunit": "^7.0",
+		"guzzlehttp/guzzle": "^6.3"
+	}
 }

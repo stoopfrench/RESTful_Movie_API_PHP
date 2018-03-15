@@ -5,7 +5,7 @@ use \Psr\Http\Message\ResponseInterface as Response;
 //GET ALL TITLES -----------------------------------------------------------
 $get_all_titles = function(Request $request, Response $response) {
 	require_once('../api/config/db.php');
-
+	
 	parse_str($_SERVER['QUERY_STRING'], $queries[]);
 
 	$query = "SELECT B.*

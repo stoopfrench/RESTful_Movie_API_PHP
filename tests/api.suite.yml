@@ -1,0 +1,18 @@
+actor: ApiTester
+modules:
+    enabled:
+      - REST:
+          url: "http://localhost/movie-api/public/"
+          depends: PhpBrowser
+          part: Json
+      - Db:
+         dsn: 'mysql:host=localhost:3306;dbname=TEST_movie_database'
+         user: 'root'
+         password: ''
+         dump: 'tests/_data/TEST_movie_database.sql'
+         populate: true
+         cleanup: true
+         reconnect: true
+         populator: '/Applications/XAMPP/bin/mysql -u $user -h localhost $dbname < $dump'
+
+        

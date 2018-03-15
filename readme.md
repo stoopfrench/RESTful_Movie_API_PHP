@@ -25,6 +25,8 @@ GET `api/titles`
  		Alphabetically by Title: api/titles?sort=title
  		ID: api/titles?sort=id
 
+**Get Details by ID** 		
+
 GET `api/titles/<id>`
  	
  	Returns details about the movie stored with that ID
