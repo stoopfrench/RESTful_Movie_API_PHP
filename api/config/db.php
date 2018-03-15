@@ -1,9 +1,12 @@
 <?php
 
-$host = 'localhost';
-$user = 'root';
-$pw = '';
-$dbname = 'movie_database';
+$dotenv = new Dotenv\Dotenv('../');
+$dotenv->overload();
+
+$host = getenv('DBHOST');
+$user = getenv('DBUSER');
+$pw = getenv('DBPW');
+$dbname = getenv('DBNAME');
 
 $mysqli=mysqli_connect($host, $user, $pw, $dbname);
 
