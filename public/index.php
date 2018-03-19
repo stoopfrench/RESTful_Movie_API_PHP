@@ -27,7 +27,8 @@ $container['errorHandler'] = function ($container) {
     return function ($request, $response, $exception) use ($container) {
         $responseData = [
             "error" => [
-                "message" => "Something went wrong"
+                "message" => "Something went wrong",
+                "error" => $exception
             ]
         ];        
         $response->getBody()->rewind();
@@ -41,7 +42,8 @@ $container['phpErrorHandler'] = function ($container) {
     return function ($request, $response, $error) use ($container) {
         $responseData = [
             "error" => [
-                "message" => "Something went wrong"
+                "message" => "Something went wrong",
+                "error" => $error
             ]
         ];
         $response->getBody()->rewind();
