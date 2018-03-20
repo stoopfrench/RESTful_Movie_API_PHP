@@ -1,6 +1,6 @@
 <?php
 
-require_once '../api/controllers/genre_controller.php';
+require_once '../api/Controllers/GenreController.php';
 
 //GENRE INDEX
 $app->get('/api/genre', $get_genre_index);

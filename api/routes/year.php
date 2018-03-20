@@ -1,6 +1,6 @@
 <?php
 
-require_once '../api/controllers/year_controller.php';
+require_once '../api/Controllers/YearController.php';
 
 //YEAR INDEX
 $app->get('/api/year', $get_year_index);

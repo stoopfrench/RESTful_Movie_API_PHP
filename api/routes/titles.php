@@ -1,6 +1,6 @@
 <?php
 
-require_once '../api/controllers/titles_controller.php';
+require_once '../api/Controllers/TitlesController.php';
 
 //GET ALL TITLES
 $app->get('/api/titles', $get_all_titles);
